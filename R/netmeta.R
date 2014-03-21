@@ -6,6 +6,7 @@ netmeta <- function(TE, seTE,
                     comb.fixed=TRUE, comb.random=FALSE,
                     reference.group="",
                     all.treatments=NULL,
+                    seq=NULL,
                     tau.preset=NULL,
                     title="",
                     warn=TRUE
@@ -19,7 +20,7 @@ netmeta <- function(TE, seTE,
   mf$data <- mf$subset <- mf$sm <- NULL
   mf$level <- mf$level.comb <- NULL
   mf$comb.fixed <- mf$comb.random <- mf$reference.group <- NULL
-  mf$all.treatments <- mf$tau.preset <- NULL
+  mf$all.treatments <- mf$seq <- mf$tau.preset <- NULL
   mf$title <- mf$warn <- NULL
   mf[[1]] <- as.name("data.frame")
   mf <- eval(mf, data)
@@ -32,7 +33,7 @@ netmeta <- function(TE, seTE,
   mf2$data <- mf2$sm <- NULL
   mf2$level <- mf2$level.comb <- NULL
   mf2$comb.fixed <- mf2$comb.random <- mf2$reference.group <- NULL
-  mf2$all.treatments <- mf2$tau.preset <- NULL
+  mf2$all.treatments <- mf2$seq <- mf2$tau.preset <- NULL
   mf2$title <- mf2$warn <- NULL
   mf2[[1]] <- as.name("data.frame")
   ##
@@ -48,40 +49,47 @@ netmeta <- function(TE, seTE,
   
   TE     <- mf$TE
   seTE   <- mf$seTE
-  treat1 <- mf$treat1
-  treat2 <- mf$treat2
   ##
-  if (length(mf$studlab)!=0){
-    if (is.factor(mf$studlab))
-      studlab <- as.character(mf$studlab)
-  }
+  treat1 <- as.character(mf$treat1)
+  treat2 <- as.character(mf$treat2)
+  ##
+  if (length(mf$studlab)!=0)
+    studlab <- as.character(mf$studlab)
   else{
     if (warn)
       warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
     studlab <- seq(along=TE)
   }
   
-  if (is.character(treat1) & is.character(treat2)){
-    tlevs <- sort(unique(c(treat1, treat2)))
-    treat1 <- factor(treat1, levels=tlevs)
-    treat2 <- factor(treat2, levels=tlevs)
-  }
   
+  tlevs <- sort(unique(c(treat1, treat2)))
   ##
-  ## TODO - Check factor variables / levels
-  ##
-  if (FALSE){
-    if ((is.factor(treat1) & !is.factor(treat2)) |
-        (!is.factor(treat1) & is.factor(treat2)))
-      stop("Both arguments 'treat1' and 'treat2' must be factor variables (if at all)")
-    ##
-    if (is.factor(treat1) & is.factor(treat2)){
-      if (length(levels(treat1))!=length(levels(treat2)))
-        warning("Factors 'treat1' and 'treat2' must have the same levels")
-      if (!all(levels(treat1)==levels(treat2)))
-        warning("Factors 'treat1' and 'treat2' must have the same levels")
+  if (!is.null(seq)){
+    if (length(tlevs)!=length(seq))
+      stop("Length of argument 'seq' different from number of treatments.")
+    else{
+      if (is.numeric(seq)){
+        if (any(is.na(seq)))
+          stop("Missing values not allowed in argument 'seq'.")
+        if (length(unique(seq)) != length(seq))
+          stop("Values for argument 'seq' must all be disparate.")
+        if (any(!(seq %in% (1:length(tlevs)))))
+          stop(paste("Argument 'seq' must be a permutation of the integers from 1 to ",
+                     length(tlevs), ".", sep=""))
+        seq <- tlevs[seq]
+        }
+      else if (is.character(seq)){
+        if (length(unique(seq)) != length(seq))
+          stop("Values for argument 'seq' must all be disparate.")
+        if (any(!(seq %in% tlevs)))
+          stop(paste("Argument 'seq' must be a permutation of the following values:\n  ",
+                     paste(paste("'", tlevs, "'", sep=""),
+                           collapse=" - "), sep=""))
+      }
     }
   }
+  else
+    seq <- tlevs
   
   
   ##
@@ -107,14 +115,6 @@ netmeta <- function(TE, seTE,
   
   
   ##
-  ## TODO - Do not reorder factor variables ...
-  ##
-  if (is.factor(treat1))
-    treat1 <- as.character(treat1)
-  if (is.factor(treat2))
-    treat2 <- as.character(treat2)
-  
-  ##
   ## Check for correct treatment order within comparison
   ##
   wo <- treat1 > treat2
@@ -127,6 +127,7 @@ netmeta <- function(TE, seTE,
     treat1[wo] <- treat2[wo]
     treat2[wo] <- ttreat1[wo]
   }
+  
   
   ##
   ## Check for levels of confidence interval
@@ -171,9 +172,7 @@ netmeta <- function(TE, seTE,
                        p0$treat1, p0$treat2,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
-                       sm=sm,
-                       level=level, level.comb=level.comb,
-                       seTE.orig=p0$seTE)
+                       sm, level, level.comb, p0$seTE)
   ##
   ## Random effects model
   ##
@@ -186,15 +185,12 @@ netmeta <- function(TE, seTE,
                        p0$treat1, p0$treat2,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
-                       sm=sm,
-                       level=level, level.comb=level.comb,
-                       seTE.orig=p0$seTE)
+                       sm, level, level.comb, p0$seTE)
   
   
   o <- order(p0$order)
   ##
-  res <- list(
-              studlab=res.f$studlab[o],
+  res <- list(studlab=res.f$studlab[o],
               treat1=res.f$treat1[o],
               treat2=res.f$treat2[o],
               ##
@@ -268,6 +264,8 @@ netmeta <- function(TE, seTE,
               ##
               reference.group=reference.group,
               all.treatments=all.treatments,
+              ##
+              seq=seq,
               ##
               title=title,
               ##

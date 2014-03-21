@@ -9,7 +9,7 @@
 }
 
 \usage{
-netgraph(x, seq=NULL, labels=NULL, plastic=TRUE, thickness=TRUE, 
+netgraph(x, seq=x$seq, labels=NULL, plastic=TRUE, thickness=TRUE,
          col="slateblue", lwd=1,
          highlight=NULL, col.highlight="red2", lwd.highlight=2, ...)
 }
@@ -69,9 +69,17 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 ## Network graph with specified order of the treatments and one
 ## highlighted comparison
 ##
-netgraph(net1, highlight="acar:metf",
-         seq=c("plac", "benf", "migl", "acar", "sulf",
-               "metf", "rosi", "piog", "sita", "vild"))
+trts <- c("plac", "benf", "migl", "acar", "sulf",
+          "metf", "rosi", "piog", "sita", "vild")
+netgraph(net1, highlight="acar:metf", seq=trts)
+##
+## Same network graph using argument 'seq' in netmeta function
+##
+net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data=Senn2013, sm="MD", reference="plac",
+                seq=trts)
+netgraph(net2, highlight="acar:metf")
+
 
 ##
 ## Network graph without 3D look of the comparisons and one highlighted comparison
