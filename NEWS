@@ -1,4 +1,26 @@
+2015-06-26, version 0.8-0
+
+New functions netrank and print.netrank:
+- frequentist method to rank treatments in network
+
+Function netmeta:
+- print less irritating warning if treatment comparisons are resorted
+  (as this is more a note than a warning)
+
+Function print.netmeta:
+- minor change in printout (old: "Data utilised in network
+  meta-analysis ..."; new: "Results ...")
+
+Help pages:
+- new help page for netrank function
+- reference Rücker & Schwarzer (2015) added in help page of netgraph
+  function
+- link to pairwise function added in help page of netmeta function
+
+
 2015-02-04, version 0.7-0
+
+Version of R package meta must be larger or equal 4.0-0
 
 Title of R package changed.
 
@@ -10,7 +32,7 @@ New function pairwise:
 New datasets:
 - dietaryfat (dataset with incidence rates as outcomes)
 - parkinson (continuous outcomes)
-- smoking (binary outcomes)
+- smokingcessation (binary outcomes)
 
 Function netmeta:
 - implement a general check for correct number of comparisons for
@@ -80,7 +102,7 @@ New functions (used internally):
 - chklist - check for a list
 
 New help pages for function pairwise and datasets dietaryfat,
-parkinson, and smoking.
+parkinson, and smokingcessation.
 
 
 2014-07-29, version 0.6-0

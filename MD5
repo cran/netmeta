@@ -1,7 +1,7 @@
 94d55d512a9ba36caa9b7df079bae19f *COPYING
-9aef91cd67fc53a0ab4f8e3d7b15f673 *DESCRIPTION
-d0a49f3daca9159858ea82ca98b49865 *NAMESPACE
-5fbb16c3762106703bcdc12de15305d4 *NEWS
+60083e4e32bb46d2d50637e3fcf3e68c *DESCRIPTION
+6f294e0d3897cc6a8ed8546d3813f641 *NAMESPACE
+1cf416278bc32ab808f3086f82d6c5cd *NEWS
 aa547649a1845cdc0f8926b0ac0323d7 *R/as.data.frame.netmeta.R
 8ed1d66adb9b4f0b6f1ca412c41efcfc *R/chklist.R
 2b42f96092b8868393c7acdfc4b6ebf6 *R/decomp.design.R
@@ -14,7 +14,8 @@ b95cdef93039e00faeecd254c25038a7 *R/netgraph.R
 03ee114cc9037e1f4eeb5d9e1c42f9d0 *R/netheat.R
 ab73588ec3bad22ef25ee8e52a0595cd *R/netmeasures.R
 36d7e698dc09dd02a7818064501789a6 *R/netmeta-internal.R
-bd3956270f97d3afb97b2fee4d9f64f1 *R/netmeta.R
+cfe861cca4736e7ee74dfca1cb2d7890 *R/netmeta.R
+a54f0bb51b02c0c6dc9b4f42bd9ca10b *R/netrank.R
 2cdd9565780ca1a5ad07ed9b8bf9f4f6 *R/nma.krahn.R
 3a750f3c92c4024bca9ce993bb75d15a *R/nma.ruecker.R
 70606ca8293186252470f462cc707440 *R/nodedist.R
@@ -22,7 +23,8 @@ d2007de9a02c011becf17e7aa1da927b *R/p.ci.R
 cdf43f215bcd0b81e0babab5fc1dbd14 *R/pairwise.R
 91a23e6d9f7ca3939e88e62dcc0e5491 *R/prepare.R
 91dd1e60a75c5184f3e768e687c532cb *R/print.decomp.design.R
-3e122546c5b6a9d5b1c615d04620c843 *R/print.netmeta.R
+cde9ed782f2d5fa6740452affe80d440 *R/print.netmeta.R
+651d60a7eb7e048dd60d957f3c0c8195 *R/print.netrank.R
 8a5c79bf1f0831a1081b8f7a09ea3452 *R/print.summary.netmeta.R
 f746aceb2f30682e8f3cffb5b75157fc *R/setref.R
 04d98d315db13ef5d1ecaabe1b96c917 *R/setseq.R
@@ -38,10 +40,11 @@ daada8dccabcf111b99d7c77182ddcc1 *man/Senn2013.Rd
 6ee7d5a781094c3e96ce0f2c0aff2bc1 *man/decomp.design.Rd
 23eb1c83d648389f3e17423bf033aae2 *man/dietaryfat.Rd
 fc1f5a55fc816768864b5b3c46b221fd *man/forest.netmeta.Rd
-108b7180d076b15951b6d0db466c8ff6 *man/netgraph.Rd
+2d396c510b04b58063de7289d4f00e8f *man/netgraph.Rd
 461e10aa82ae4672f0da9b632a2242b4 *man/netheat.Rd
 b86ed9504148805d0385523677b7cfb9 *man/netmeasures.Rd
-4c23f89b529669f2fc09b88958ddf064 *man/netmeta.Rd
+a513dfe9e0be7b58fd0a7a27e1e7481f *man/netmeta.Rd
+eb6d3694ee2ff84f971f6fd6e1ec3211 *man/netrank.Rd
 3ee1928054efbee4509d0efd6655412a *man/pairwise.Rd
 75beb5baeddad4c30120ac38ad6a352e *man/parkinson.Rd
 55d9e313f5048600285d7ac639cd6d90 *man/print.decomp.design.Rd
