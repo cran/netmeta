@@ -19,10 +19,15 @@ netgraph(x, seq = x$seq,
          multiarm = any(x$narms > 2), col.multiarm = NULL,
          alpha.transparency = 0.5,
          points = FALSE, col.points = "red", cex.points = 1, pch.points = 20,
+         number.of.studies = FALSE,
+         cex.number.of.studies = cex,
+         col.number.of.studies = "white",
+         bg.number.of.studies = "black",
          start.layout = ifelse(dim  == "2d", "circle", "eigen"),
          eig1 = 2, eig2 = 3, eig3 = 4,
          iterate, tol = 0.0001, maxit = 500, allfigures = FALSE,
          A.matrix = x$A.matrix, N.matrix = sign(A.matrix),
+	 D.matrix = netdistance(N.matrix),
          xpos = NULL, ypos = NULL, zpos = NULL,
          ...)
 }
@@ -80,6 +85,13 @@ netgraph(x, seq = x$seq,
     at nodes (i.e. treatments) of the network graph.}
   \item{col.points, cex.points, pch.points}{Corresponding color, size,
     type for points.}
+  \item{number.of.studies}{A logical indicating whether number of
+    studies should be added to network graph.}
+  \item{cex.number.of.studies}{The magnification to be used for number
+    of studies.}
+  \item{col.number.of.studies}{Color for number of studies.}
+  \item{bg.number.of.studies}{Color for shadow around number of
+    studies.}
   \item{start.layout}{A character string indicating which starting
     layout is used if \code{iterate = TRUE}. If "circle" (default), the
     iteration starts with a circular ordering of the vertices; if
@@ -118,6 +130,10 @@ netgraph(x, seq = x$seq,
     adjacency in the network graph, for example content-based. Row and
     column names must be the same set of values as provided by
     argument \code{seq}.}
+  \item{D.matrix}{Distance matrix (\emph{n}x\emph{n}) replacing
+    A.matrix and N.matrix if distances should be provided
+    directly. Row and column names must be the same set of values as
+    provided by argument \code{seq}.}
   \item{xpos}{Vector (\emph{n}) of x coordinates.}
   \item{ypos}{Vector (\emph{n}) of y coordinates.}
   \item{zpos}{Vector (\emph{n}) of z coordinates.}
@@ -199,13 +215,12 @@ netgraph(x, seq = x$seq,
   Data visualization through graph drawing.
   \emph{Computational Statistics}, \bold{16}(3), 435--450.
 
-  Rücker G & Schwarzer G (2015),
+  Rücker G & Schwarzer G (2016),
   Automated drawing of network plots in network meta-analysis.
-  \emph{Research Synthesis Methods},
-  First published online 2015 Jun 9.
+  \emph{Research Synthesis Methods}, \bold{7}, 94--107.
 }
 
-\author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Ulrike Krahn \email{krahnu@uni-mainz.de}, Jochem König \email{koenigjo@uni-mainz.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
+\author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Ulrike Krahn \email{ulrike.krahn@bayer.com}, Jochem König \email{koenigjo@uni-mainz.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
 \seealso{\code{\link{netmeta}}}
 
@@ -275,10 +290,12 @@ netgraph(net1, plastic = FALSE, thickness = FALSE)
 netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
          labels = LETTERS[1:10])
 
+\dontrun{
 # Network graph in 3-D (opens a new device, where you may rotate and
 # zoom the plot using the mouse / the mouse wheel).
 #
 netgraph(net1, dim = "3d")
+}
 }
 
 \keyword{Network meta-analysis}
