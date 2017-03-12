@@ -16,7 +16,9 @@
 \usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
         comb.fixed=TRUE, comb.random=FALSE, reference.group="",
-        all.treatments=NULL, seq=NULL, tau.preset=NULL, title="", warn=TRUE)
+        all.treatments=NULL, seq=NULL, tau.preset=NULL,
+        tol.multiarm = 0.0005, details.tol.multiarm = FALSE,
+        title="", warn=TRUE)
 }
 
 \arguments{
@@ -48,6 +50,12 @@
     of treatments in printouts.}
   \item{tau.preset}{An optional value for the square-root of the
     between-study variance \eqn{\tau^2}.}
+  \item{tol.multiarm}{A numeric for the tolerance for consistency of
+    treatment estimates and corresponding variances in multi-arm studies
+    which are consistent by design.}
+  \item{details.tol.multiarm}{A logical indicating whether treatment
+    estimates and / or variances of multi-arm studies with inconsistent
+    results should be printed.} 
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero
@@ -185,6 +193,37 @@
   \item{zval.fixed, pval.fixed, zval.random, pval.random}{\emph{n}x\emph{n}
     matrices with z-value and p-value for test of overall treatment
     effect (fixed effect / random effects model).}
+  \item{TE.direct.fixed, TE.direct.random}{\emph{n}x\emph{n} matrix
+    with estimated treatment effects from direct evidence (fixed
+    effect / random effects model).}
+  \item{seTE.direct.fixed, seTE.direct.random}{\emph{n}x\emph{n}
+    matrix with estimated standard errors from direct evidence (fixed
+    effect / random effects model).}
+  \item{lower.direct.fixed, upper.direct.fixed, lower.direct.random,
+    upper.direct.random}{\emph{n}x\emph{n} matrices with lower and
+    upper confidence interval limits from direct evidence (fixed
+    effect / random effects model).}
+  \item{zval.direct.fixed, pval.direct.fixed, zval.direct.random,
+    pval.direct.random}{\emph{n}x\emph{n} matrices with z-value and
+    p-value for test of overall treatment effect from direct evidence
+    (fixed effect / random effects model).}
+  \item{TE.indirect.fixed, TE.indirect.random}{\emph{n}x\emph{n} matrix
+    with estimated treatment effects from indirect evidence (fixed
+    effect / random effects model).}
+  \item{seTE.indirect.fixed, seTE.indirect.random}{\emph{n}x\emph{n}
+    matrix with estimated standard errors from indirect evidence (fixed
+    effect / random effects model).}
+  \item{lower.indirect.fixed, upper.indirect.fixed, lower.indirect.random,
+    upper.indirect.random}{\emph{n}x\emph{n} matrices with lower and
+    upper confidence interval limits from indirect evidence (fixed
+    effect / random effects model).}
+  \item{zval.indirect.fixed, pval.indirect.fixed, zval.indirect.random,
+    pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value and
+    p-value for test of overall treatment effect from indirect evidence
+    (fixed effect / random effects model).}
+  \item{prop.direct.fixed, prop.direct.random}{A named vector of the
+    direct evidence proportion of each network estimate. (fixed effect
+    / random effects model).}
   \item{Q.fixed}{A vector of length \emph{m} of contributions to total
     heterogeneity / inconsistency statistic.}
   \item{k}{Total number of studies.}
