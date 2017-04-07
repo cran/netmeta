@@ -1,7 +1,7 @@
 94d55d512a9ba36caa9b7df079bae19f *COPYING
-187d550c5d872d8ccfb0c69f7bd27d4f *DESCRIPTION
+aac114694581e28486f2402a99009c7c *DESCRIPTION
 f30caa88b7ec5cc1d5c9e970b5988ca7 *NAMESPACE
-ef5a341dbef1a0df4266c72332574e18 *NEWS
+db2eae360bb8bab6d9e6f69b09915e34 *NEWS
 c580cd738aa74d8a4e3997b126437ee0 *R/as.data.frame.netmeta.R
 6ef831886ce1875edea1da96a144ddd6 *R/chklist.R
 cbef12a6980eb72271971f0e954aa28a *R/chkmultiarm.R
@@ -17,12 +17,12 @@ fb63f1b93350198961e7247471c3be8e *R/lowertri.R
 d734a345966aa22879f59a39cd26a81c *R/netdistance.R
 e76a3b896705a98c39c10d5370e958a3 *R/netgraph.R
 67f4a8e04a2cbffee062d8ecf206ef7e *R/netheat.R
-4f4dce2d9ee60ab3e2aed697b9769894 *R/netmeasures.R
+ebbbfbfb5e72725453bede548613747a *R/netmeasures.R
 c548142cf6136c70dc79181af2815e5c *R/netmeta-internal.R
 48517b0530a56e8dcc605676533f768b *R/netmeta.R
 3515764d43b72c34ee3c61c95f6b2423 *R/netposet.R
 8f5e2fce5565ddb9cd6113b78b193363 *R/netrank.R
-71fbd0f81a6625b7c5a2810381c5d80f *R/netsplit.R
+587d3b005b5b8d49538a5f5e142406a2 *R/netsplit.R
 6c6e340824f669ae6234d5eff4c250e6 *R/nma.krahn.R
 b96b0dd88af6e2fda61daa5157e63ba1 *R/nma.ruecker.R
 c8fc9554242af70ed23001c6528d43b6 *R/p.ci.R
