@@ -123,22 +123,22 @@
 #'             row.names = FALSE, col.names = FALSE,
 #'             sep = ",")
 #' #
-#' # Create Excel files with league tables (using R package WriteXLS
-#' # which requires Perl https://www.perl.org/)
+#' # Create Excel files with league tables
+#' # (if R package writexl is available)
 #' #
-#' library(WriteXLS)
-#' #
-#' # League table from random effects model
-#' #
-#' WriteXLS(league0$random, ExcelFileName = "league0-random.xls",
-#'          SheetNames = "leaguetable (random)", col.names = FALSE)
-#' #
-#' # League tables from fixed and random effects models
-#' #
-#' WriteXLS(list(league0$fixed, league0$random),
-#'          ExcelFileName = "league0-both.xls",
-#'          SheetNames = c("leaguetable (fixed)", "leaguetable (random)"),
-#'          col.names = FALSE)
+#' if (requireNamespace("writexl", quietly = TRUE)) {
+#'   library(writexl)
+#'   #
+#'   # League table from random effects model
+#'   #
+#'   write_xlsx(league0$random,
+#'              path = "league0-random.xlsx", col_names = FALSE)
+#'   #
+#'   # League tables from fixed and random effects models
+#'   #
+#'   write_xlsx(list(fixed = league0$fixed, random = league0$random),
+#'              path = "league0-both.xlsx", col_names = FALSE)
+#' }
 #' 
 #' # Use depression dataset
 #' #
@@ -162,7 +162,7 @@
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small = "bad")
 #' 
 #' # (2) Early remission
 #' #
@@ -172,7 +172,7 @@
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small = "bad")
 #' 
 #' options(width = 200)
 #' netleague(net1, digits = 2)
@@ -186,18 +186,18 @@
 #' #
 #' netleague(net1, net2, digits = 2, ci = FALSE)
 #' 
-#' netleague(net1, net2, seq = netrank(net1, small = "bad"), ci = FALSE)
-#' netleague(net1, net2, seq = netrank(net2, small = "bad"), ci = FALSE)
+#' netleague(net1, net2, seq = netrank(net1), ci = FALSE)
+#' netleague(net1, net2, seq = netrank(net2), ci = FALSE)
 #' 
-#' print(netrank(net1, small = "bad"))
-#' print(netrank(net2, small = "bad"))
+#' print(netrank(net1))
+#' print(netrank(net2))
 #' 
 #' 
 #' # Report results for network meta-analysis twice
 #' #
-#' netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
+#' netleague(net1, net1, seq = netrank(net1), ci = FALSE,
 #'           backtransf = FALSE)
-#' netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
+#' netleague(net1, net1, seq = netrank(net1), ci = FALSE,
 #'           backtransf = FALSE, direct = TRUE)
 #' }
 #' 
@@ -206,7 +206,7 @@
 #' \dontrun{
 #' # Generate a partial order of treatment rankings 
 #' #
-#' np <- netposet(net1, net2, outcomes = outcomes, small.values = rep("bad",2))
+#' np <- netposet(net1, net2, outcomes = outcomes)
 #' hasse(np)
 #' plot(np)
 #' }
@@ -275,7 +275,7 @@ netleague <- function(x, y,
   chklogical(ci)
   chklogical(backtransf)
   chklogical(direct)
-  chknumeric(digits, min = 0, single = TRUE)
+  chknumeric(digits, min = 0, length = 1)
   ##
   bracket.old <- gs("CIbracket")
   separator.old <- gs("CIseparator")

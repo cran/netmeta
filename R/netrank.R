@@ -103,12 +103,16 @@
 #' @export netrank
 
 
-netrank <- function(x, small.values = "good") {
+netrank <- function(x, small.values = x$small.values) {
   
   ## Check for netmeta object
   ##
-  meta:::chkclass(x, "netmeta")
-  small.values <- meta:::setchar(small.values, c("good", "bad"))
+  meta:::chkclass(x, c("netmeta", "netcomb"))
+  ##
+  if (is.null(small.values))
+    small.values <- "good"
+  else
+    small.values <- meta:::setchar(small.values, c("good", "bad"))
   
   
   TE.fixed <- x$TE.fixed
@@ -199,7 +203,7 @@ print.netrank <- function(x,
   else
     meta:::chklogical(sort)
   ##
-  meta:::chknumeric(digits, single = TRUE)
+  meta:::chknumeric(digits, length = 1)
   
   
   both <- (comb.fixed + comb.random) == 2

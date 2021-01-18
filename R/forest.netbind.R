@@ -115,6 +115,8 @@ forest.netbind <- function(x,
   ##
   meta:::chkclass(x, "netbind")
   ##
+  x <- upgradenetmeta(x)
+  ##
   chkchar <- meta:::chkchar
   chklogical <- meta:::chklogical
   chknumeric <- meta:::chknumeric
@@ -125,8 +127,8 @@ forest.netbind <- function(x,
   ##
   chklogical(equal.size)
   ##
-  chknumeric(digits, min = 0, single = TRUE)
-  chknumeric(digits.prop, min = 0, single = TRUE)
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.prop, min = 0, length = 1)
   chklogical(backtransf)
   ##
   chkchar(lab.NA)
@@ -140,17 +142,21 @@ forest.netbind <- function(x,
   sel <- x$fixed$treat != x$reference.group
   ##
   if (pooled == "fixed") {
-    m <- metagen(x$fixed$TE, x$fixed$seTE, studlab = x$fixed$name,
-                 sm = x$sm, comb.fixed = FALSE, comb.random = FALSE,
-                 byvar = x$fixed$treat, print.byvar = FALSE,
-                 subset = x$fixed$treat != x$reference.group)
+    m <-
+      suppressWarnings(metagen(x$fixed$TE, x$fixed$seTE,
+                               studlab = x$fixed$name,
+                               sm = x$sm,
+                               comb.fixed = FALSE, comb.random = FALSE,
+                               byvar = x$fixed$treat, print.byvar = FALSE,
+                               subset = x$fixed$treat != x$reference.group))
     ##
     m$TE <- x$fixed$TE[sel]
     m$seTE <- x$fixed$seTE[sel]
     m$lower <- x$fixed$lower[sel]
     m$upper <- x$fixed$upper[sel]
-    m$zval <- x$fixed$zval[sel]
+    m$statistic <- x$fixed$statistic[sel]
     m$pval <- x$fixed$pval[sel]
+    m$zval <- x$fixed$statistic[sel]
     ##
     m$col.study <- x$fixed$col.study[sel]
     m$col.square <- x$fixed$col.square[sel]
@@ -160,17 +166,21 @@ forest.netbind <- function(x,
     text.pooled <- "Fixed Effects Model"
   }
   else {
-    m <- metagen(x$random$TE, x$random$seTE, studlab = x$random$name,
-                 sm = x$sm, comb.fixed = FALSE, comb.random = FALSE,
-                 byvar = x$random$treat, print.byvar = FALSE,
-                 subset = x$random$treat != x$reference.group)
+    m <-
+      suppressWarnings(metagen(x$random$TE, x$random$seTE,
+                               studlab = x$random$name,
+                               sm = x$sm,
+                               comb.fixed = FALSE, comb.random = FALSE,
+                               byvar = x$random$treat, print.byvar = FALSE,
+                               subset = x$random$treat != x$reference.group))
     ##
     m$TE <- x$random$TE[sel]
     m$seTE <- x$random$seTE[sel]
     m$lower <- x$random$lower[sel]
     m$upper <- x$random$upper[sel]
-    m$zval <- x$random$zval[sel]
+    m$statistic <- x$random$statistic[sel]
     m$pval <- x$random$pval[sel]
+    m$zval <- x$random$statistic[sel]
     ##
     m$col.study <- x$random$col.study[sel]
     m$col.square <- x$random$col.square[sel]

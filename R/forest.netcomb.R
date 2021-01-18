@@ -26,10 +26,6 @@
 #'   \code{\link{forest.meta}} help page for details).
 #' @param digits Minimal number of significant digits for treatment
 #'   effects and confidence intervals, see \code{print.default}.
-#' @param small.values A character string specifying whether small
-#'   treatment effects indicate a beneficial (\code{"good"}) or
-#'   harmful (\code{"bad"}) effect, can be abbreviated; see
-#'   \code{\link{netrank}}.
 #' @param smlab A label printed at top of figure. By default, text
 #'   indicating either fixed effect or random effects model is
 #'   printed.
@@ -144,7 +140,6 @@ forest.netcomb <- function(x,
                            rightcols = c("effect", "ci"),
                            rightlabs = NULL,
                            digits = gs("digits.forest"),
-                           small.values = "good",
                            smlab = NULL,
                            sortvar = x$seq,
                            backtransf = x$backtransf,
@@ -160,6 +155,9 @@ forest.netcomb <- function(x,
   ##
   ##
   meta:::chkclass(x, "netcomb")
+  ##
+  x <- upgradenetmeta(x)
+  ##
   is.discomb <- inherits(x, "discomb")
   ##
   chklogical <- meta:::chklogical
@@ -167,7 +165,7 @@ forest.netcomb <- function(x,
   ##
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
   ##
-  meta:::chknumeric(digits, min = 0, single = TRUE)
+  meta:::chknumeric(digits, min = 0, length = 1)
   ##
   chklogical(baseline.reference)
   chklogical(drop.reference.group)
@@ -330,10 +328,11 @@ forest.netcomb <- function(x,
     dat <- subset(dat, trts != reference.group)
   ##
   trts <- dat$trts
-  m1 <- metagen(TE, seTE, data = dat,
-                sm = x$sm,
-                studlab = trts, backtransf = backtransf,
-                warn = FALSE)
+  m1 <-
+    suppressWarnings(metagen(TE, seTE, data = dat,
+                             sm = x$sm,
+                             studlab = trts, backtransf = backtransf,
+                             warn = FALSE))
   ##
   forest.meta(m1,
               digits = digits,

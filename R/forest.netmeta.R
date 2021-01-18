@@ -184,7 +184,7 @@ forest.netmeta <- function(x,
                            rightcols = c("effect", "ci"),
                            rightlabs,
                            digits = gs("digits.forest"),
-                           small.values = "good",
+                           small.values = x$small.values,
                            digits.Pscore = 2,
                            smlab = NULL,
                            sortvar = x$seq,
@@ -214,7 +214,12 @@ forest.netmeta <- function(x,
   ##
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
   ##
-  meta:::chknumeric(digits, min = 0, single = TRUE)
+  meta:::chknumeric(digits, min = 0, length = 1)
+  if (is.null(small.values))
+    small.values <- "good"
+  else
+    small.values <- meta:::setchar(small.values, c("good", "bad"))
+  meta:::chknumeric(digits.Pscore, min = 0, length = 1)
   ##
   chklogical(baseline.reference)
   ##
@@ -487,16 +492,16 @@ forest.netmeta <- function(x,
   treat <- dat$treat
   ##
   if (one.rg)
-    m1 <- metagen(TE, seTE, data = dat,
-                  sm = x$sm,
-                  studlab = labels, backtransf = backtransf,
-                  warn = FALSE)
+    m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
+                                   sm = x$sm,
+                                   studlab = labels, backtransf = backtransf,
+                                   warn = FALSE))
   else
-    m1 <- metagen(TE, seTE, data = dat,
-                  byvar = dat$comparison,
-                  sm = x$sm,
-                  studlab = labels, backtransf = backtransf,
-                  warn = FALSE)
+    m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
+                                   byvar = dat$comparison,
+                                   sm = x$sm,
+                                   studlab = labels, backtransf = backtransf,
+                                   warn = FALSE))
   ##
   forest(m1,
          digits = digits,
