@@ -1,20 +1,17 @@
-.onAttach <-
-function (libname, pkgname) 
-{
-  msg <- paste("Loading 'netmeta' package (version ",
-               packageDescription("netmeta")$Version,
-               ").",
-               "\nType 'help(\"netmeta-package\")' for a brief overview.",
-               sep = "")
+.onAttach <- function (libname, pkgname) {
+  msg <-
+    paste0("Loading 'netmeta' package (version ",
+           packageDescription("netmeta")$Version,
+           ").",
+           "\nType 'help(\"netmeta-package\")' for a brief overview.",
+           "\nReaders of 'Meta-Analysis with R (Use R!)' should install",
+           "\nolder version of 'netmeta' package: ",
+           "https://tinyurl.com/kyz6wjbb")
   packageStartupMessage(msg)
 }
 
 
 .special.characters <- c("+", ".", "&", "$", "#", "|", "*", "^")
-
-
-is.zero <- function(x, n = 10)
-  abs(x) < n * .Machine$double.eps
 
 
 invmat <- function(X) {
@@ -61,3 +58,24 @@ calcV <- function(x, sm) {
   ##
   V
 }
+
+
+##
+## Abbreviated component labels
+##
+compos <- function(x, lev, abbr, split, add) {
+  x.list <- compsplit(x, split = split)
+  if (!missing(add))
+    add <- ifelse(add, " ", "")
+  else
+    add <- ifelse(attr(x.list, "withspace"), " ", "")
+  ##
+  x.list <- lapply(x.list, charfac, levels = lev, labels = abbr)
+  x.list <- lapply(x.list, paste, collapse = paste0(add, split, add))
+  ##
+  unlist(x.list)
+}
+
+
+charfac <- function(x, ...)
+  as.character(factor(x, ...))

@@ -17,6 +17,10 @@
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
 #' @param big.mark A character used as thousands separator.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
 #' @param \dots Additional arguments (ignored at the moment).
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Ulrike
@@ -29,13 +33,22 @@
 #' @examples
 #' data(Senn2013)
 #' 
+#' # Only consider first five studies (to reduce runtime of example)
+#' #
+#' studies <- unique(Senn2013$studlab)
+#' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
+#' 
+#' # Conduct network meta-analysis with placebo as reference treatment
+#' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD")
-#' print(decomp.design(net1))
+#'                 data = Senn2013.5, sm = "MD", reference = "plac")
+#' 
+#' # Decomposition of Cochran's Q
+#' #
+#' decomp.design(net1)
 #' 
 #' @method print decomp.design
 #' @export
-#' @export print.decomp.design
 
 
 print.decomp.design <- function(x,
@@ -44,27 +57,35 @@ print.decomp.design <- function(x,
                                 digits.pval.Q = gs("digits.pval.Q"),
                                 digits.tau2 = gs("digits.tau2"),
                                 scientific.pval = gs("scientific.pval"),
-                                big.mark = gs("big.mark"), ...) {
+                                big.mark = gs("big.mark"),
+                                nchar.trts = x$nchar.trts,
+                                legend = TRUE,
+                                ...) {
   
   
-  meta:::chkclass(x, "decomp.design")
-  ##
-  formatPT <- meta:::formatPT
-  formatN <- meta:::formatN
-  chknumeric <- meta:::chknumeric
+  chkclass(x, "decomp.design")
   ##
   chknumeric(digits.Q, min = 0, length = 1)
   chknumeric(digits.pval.Q, min = 0, length = 1)
   chknumeric(digits.tau2, min = 0, length = 1)
   ##
-  meta:::chklogical(showall)
+  chklogical(showall)
+  if (is.null(nchar.trts))
+    nchar.trts <- 666
+  chknumeric(nchar.trts, min = 1, length = 1)
+  chklogical(legend)
+  ##
+  if (is.null(x$x$sep.trts))
+    sep.trts <- ":"
+  else
+    sep.trts <- x$x$sep.trts
   
   
   if (!is.null(attributes(x)$netmetabin)) {
     Qdata <- x$Q.decomp
     ##
     Qdata$Q <- round(Qdata$Q, digits.Q)
-    Qdata$pval <- meta:::formatPT(Qdata$pval,
+    Qdata$pval <- formatPT(Qdata$pval,
                                   digits = digits.pval.Q,
                                   scientific = scientific.pval)
     ##
@@ -80,6 +101,8 @@ print.decomp.design <- function(x,
   Q.decomp <- x$Q.decomp
   Q.design <- x$Q.het.design
   Q.detach <- x$Q.inc.detach
+  ##
+  trts1 <- trts2 <- ""
   ##
   if (!showall) {
     Q.design <- Q.design[Q.design$df > 0, ]
@@ -137,6 +160,10 @@ print.decomp.design <- function(x,
   
   if (nrow(Q.design) > 0) {
     cat("\nDesign-specific decomposition of within-designs Q statistic\n\n")
+    ##
+    trts1 <- unique(sort(unlist(compsplit(Q.design[, 1], sep.trts))))
+    Q.design[, 1] <- comps(Q.design[, 1], trts1, sep.trts, nchar.trts)
+    ##
     dimnames(Q.design) <- list(rep("", dim(Q.design)[[1]]),
                                colnames(Q.design))
     prmatrix(Q.design, quote = FALSE, right = TRUE)
@@ -144,6 +171,10 @@ print.decomp.design <- function(x,
   
   if (nrow(Q.detach) > 0) {
     cat("\nBetween-designs Q statistic after detaching of single designs\n\n")
+    ##
+    trts2 <- unique(sort(unlist(compsplit(Q.detach[, 1], sep.trts))))
+    Q.detach[, 1] <- comps(Q.detach[, 1], trts2, sep.trts, nchar.trts)
+    ##
     dimnames(Q.detach) <- list(rep("", dim(Q.detach)[[1]]),
                                colnames(Q.detach))
     prmatrix(Q.detach, quote = FALSE, right = TRUE)
@@ -153,6 +184,29 @@ print.decomp.design <- function(x,
             "a full design-by-treatment interaction random effects model\n\n",
             sep = ""))
   print(Q.inc.random)
-
+  
+  
+  if (legend) {
+    trts1.abbr <- treats(trts1, nchar.trts)
+    trts2.abbr <- treats(trts2, nchar.trts)
+    ##
+    diff.trts1 <- trts1 != trts1.abbr
+    diff.trts2 <- trts2 != trts2.abbr
+    if (any(diff.trts1) | any(diff.trts2)) {
+      cat("\nLegend:\n")
+      ##
+      trts <- c(trts1, trts2)
+      trts.abbr <- c(trts1.abbr, trts2.abbr)
+      tmat <- data.frame(trts.abbr, trts)
+      tmat <- tmat[diff.trts1 | diff.trts2, ]
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      prmatrix(unique(tmat), quote = FALSE, right = TRUE,
+               rowlab = rep("", nrow(unique(tmat))))
+    }
+  }
+  
+  
   invisible(NULL)
 }

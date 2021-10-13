@@ -2,17 +2,20 @@
 % Please edit documentation in R/forest.netsplit.R
 \name{forest.netsplit}
 \alias{forest.netsplit}
+\alias{plot.netsplit}
 \title{Forest plot for direct and indirect evidence}
 \usage{
 \method{forest}{netsplit}(
   x,
-  pooled = ifelse(x$comb.random, "random", "fixed"),
+  pooled = ifelse(x$x$random, "random", "fixed"),
   show = "both",
   subgroup = "comparison",
   overall = TRUE,
   direct = TRUE,
   indirect = TRUE,
   prediction = x$prediction,
+  only.reference = FALSE,
+  sortvar = NULL,
   text.overall = "Network estimate",
   text.direct = "Direct estimate",
   text.indirect = "Indirect estimate",
@@ -39,6 +42,8 @@
   smlab,
   ...
 )
+
+\method{plot}{netsplit}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netsplit}.}
@@ -66,6 +71,12 @@ should be printed.}
 
 \item{prediction}{A logical indicating whether prediction intervals
 should be printed.}
+
+\item{only.reference}{A logical indicating whether only comparisons
+with the reference group should be printed.}
+
+\item{sortvar}{An optional vector used to sort comparisons (must be
+of same length as the total number of comparisons).}
 
 \item{text.overall}{A character string used in the plot to label
 the network estimates.}
@@ -161,7 +172,8 @@ If direct estimates are included in the forest plot (\code{direct =
 TRUE}, default), the following columns will be printed on the left
 side of the forest plot: the comparisons (column \code{"studlab"}
 in \code{\link{forest.meta}}), number of pairwise comparisons
-(\code{"k"}), and direct evidence proportion (\code{"k"}).
+(\code{"k"}), direct evidence proportion (\code{"k"}), and
+I\eqn{^2} from pairwise comparison (\code{"I2"}).
 
 If direct estimates are not included in the forest plot
 (\code{direct = FALSE}), only the comparisons (\code{"studlab"})
@@ -179,17 +191,20 @@ Argument \code{show} determines which comparisons are printed:
 \dQuote{direct.only} \tab Comparisons providing only direct
   evidence \cr
 \dQuote{indirect.only} \tab Comparisons providing only indirect
-  evidence \cr
-\dQuote{reference.only} \tab Only comparisons with the reference
-  group
+  evidence
 }
 }
 \examples{
 data(Senn2013)
+
+# Only consider first five studies (to reduce runtime of example)
 #
+studies <- unique(Senn2013$studlab)
+Senn2013.5 <- subset(Senn2013, studlab \%in\% studies[1:5])
+
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-                studlab, data = Senn2013,
-                comb.fixed = FALSE)
+                studlab, data = Senn2013.5,
+                fixed = FALSE)
 #
 ns1 <- netsplit(net1)
 

@@ -3,6 +3,8 @@
 #' @description
 #' Draws a forest plot in the active graphics window (using grid
 #' graphics system).
+#'
+#' @aliases forest.netcomt plot.netcomb
 #' 
 #' @param x An object of class \code{netcomb}.
 #' @param reference.group Reference treatment(s).
@@ -86,7 +88,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, ref = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -116,9 +118,9 @@
 #' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = Linde2016, ref = "placebo",
 #'                 seq = trts,
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' #
-#' summary(net2)
+#' net2
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -130,11 +132,10 @@
 #' 
 #' @method forest netcomb
 #' @export
-#' @export forest.netcomb
 
 
 forest.netcomb <- function(x,
-                           pooled = ifelse(x$comb.random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "fixed"),
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
                            leftcols = "studlab",
@@ -157,24 +158,20 @@ forest.netcomb <- function(x,
   ## (1) Check and set arguments
   ##
   ##
-  meta:::chkclass(x, "netcomb")
-  ##
-  x <- upgradenetmeta(x)
+  chkclass(x, "netcomb")
+  x <- updateversion(x)
   ##
   is.discomb <- inherits(x, "discomb")
   ##
-  chklogical <- meta:::chklogical
-  formatN <- meta:::formatN
+  pooled <- setchar(pooled, c("fixed", "random"))
   ##
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
-  ##
-  meta:::chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits, min = 0, length = 1)
   ##
   chklogical(baseline.reference)
   chklogical(drop.reference.group)
   ##
   chklogical(backtransf)
-  meta:::chkchar(lab.NA)
+  chkchar(lab.NA)
   
   
   ##
@@ -186,7 +183,8 @@ forest.netcomb <- function(x,
   labels <- colnames(x$TE.fixed)
   ##
   if (reference.group == "") {
-    warning("First treatment used as reference as argument 'reference.group' is unspecified.")
+    warning("First treatment used as reference as ",
+            "argument 'reference.group' is unspecified.")
     reference.group <- labels[1]
   }
   else
@@ -196,7 +194,7 @@ forest.netcomb <- function(x,
     TE   <- x$TE.fixed
     seTE <- x$seTE.fixed
     ##
-    text.fixed <- "(Fixed Effect Model)"
+    text.fixed <- "(Fixed Effects Model)"
     ##
     if (is.null(smlab))
       if (baseline.reference)
@@ -337,19 +335,31 @@ forest.netcomb <- function(x,
                              studlab = trts, backtransf = backtransf,
                              warn = FALSE))
   ##
-  forest.meta(m1,
-              digits = digits,
-              comb.fixed = FALSE, comb.random = FALSE,
-              hetstat = FALSE,
-              leftcols = leftcols,
-              leftlabs = leftlabs,
-              rightcols = rightcols,
-              rightlabs = rightlabs,
-              smlab = smlab,
-              lab.NA = lab.NA,
-              weight.study = weight.study,
-              ...)
+  forest(m1,
+         digits = digits,
+         fixed = FALSE, random = FALSE,
+         overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
+         leftcols = leftcols,
+         leftlabs = leftlabs,
+         rightcols = rightcols,
+         rightlabs = rightlabs,
+         smlab = smlab,
+         lab.NA = lab.NA,
+         weight.study = weight.study,
+         ...)
   
   
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netcomb
+#' @method plot netcomb
+#' @export
+#'
+
+plot.netcomb <- function(x, ...)
+  forest(x, ...)

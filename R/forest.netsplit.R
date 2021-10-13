@@ -4,6 +4,8 @@
 #' Forest plot to show direct and indirect evidence in network
 #' meta-analysis.  Furthermore, estimates from network meta-analysis
 #' as well as prediction intervals can be printed.
+#'
+#' @aliases forest.netsplit plot.netsplit
 #' 
 #' @param x An object of class \code{netsplit}.
 #' @param pooled A character string indicating whether results for the
@@ -19,6 +21,10 @@
 #'   should be printed.
 #' @param prediction A logical indicating whether prediction intervals
 #'   should be printed.
+#' @param only.reference A logical indicating whether only comparisons
+#'   with the reference group should be printed.
+#' @param sortvar An optional vector used to sort comparisons (must be
+#'   of same length as the total number of comparisons).
 #' @param subgroup A character string indicating which layout should
 #'   be used in forest plot: subgroups by comparisons
 #'   (\code{"comparison"}) or subgroups by estimates
@@ -88,7 +94,8 @@
 #' TRUE}, default), the following columns will be printed on the left
 #' side of the forest plot: the comparisons (column \code{"studlab"}
 #' in \code{\link{forest.meta}}), number of pairwise comparisons
-#' (\code{"k"}), and direct evidence proportion (\code{"k"}).
+#' (\code{"k"}), direct evidence proportion (\code{"k"}), and
+#' I\eqn{^2} from pairwise comparison (\code{"I2"}).
 #' 
 #' If direct estimates are not included in the forest plot
 #' (\code{direct = FALSE}), only the comparisons (\code{"studlab"})
@@ -106,9 +113,7 @@
 #' \dQuote{direct.only} \tab Comparisons providing only direct
 #'   evidence \cr
 #' \dQuote{indirect.only} \tab Comparisons providing only indirect
-#'   evidence \cr
-#' \dQuote{reference.only} \tab Only comparisons with the reference
-#'   group
+#'   evidence
 #' }
 #'
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
@@ -119,10 +124,15 @@
 #' 
 #' @examples
 #' data(Senn2013)
+#' 
+#' # Only consider first five studies (to reduce runtime of example)
 #' #
+#' studies <- unique(Senn2013$studlab)
+#' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
+#' 
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-#'                 studlab, data = Senn2013,
-#'                 comb.fixed = FALSE)
+#'                 studlab, data = Senn2013.5,
+#'                 fixed = FALSE)
 #' #
 #' ns1 <- netsplit(net1)
 #' 
@@ -148,11 +158,10 @@
 #' 
 #' @method forest netsplit
 #' @export
-#' @export forest.netsplit
 
 
 forest.netsplit <- function(x,
-                            pooled = ifelse(x$comb.random, "random", "fixed"),
+                            pooled = ifelse(x$x$random, "random", "fixed"),
                             show = "both",
                             ##
                             subgroup = "comparison",
@@ -161,6 +170,10 @@ forest.netsplit <- function(x,
                             direct = TRUE,
                             indirect = TRUE,
                             prediction = x$prediction,
+                            ##
+                            only.reference = FALSE,
+                            ##
+                            sortvar = NULL,
                             ##
                             text.overall = "Network estimate",
                             text.direct = "Direct estimate",
@@ -200,15 +213,8 @@ forest.netsplit <- function(x,
   ## (1) Check and set arguments
   ##
   ##
-  meta:::chkclass(x, "netsplit")
-  ##
-  x <- upgradenetmeta(x)
-  ##
-  chkchar <- meta:::chkchar
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  formatPT <- meta:::formatPT
-  setchar <- meta:::setchar
+  chkclass(x, "netsplit")
+  x <- updateversion(x)
   ##
   pooled <- setchar(pooled, c("fixed", "random"))
   ##
@@ -218,6 +224,22 @@ forest.netsplit <- function(x,
   chklogical(direct)
   chklogical(indirect)
   chklogical(prediction)
+  ##
+  missing.only.reference <- missing(only.reference)
+  if (!missing.only.reference)
+    chklogical(only.reference)
+  ##
+  if (!is.null(sortvar)) {
+    if (length(sortvar) == 1)
+      if (tolower(sortvar) == "k")
+        sortvar <- x$k
+      else if (tolower(sortvar) == "-k")
+        sortvar <- -x$k
+      else
+        stop("Wrong value for argument 'sortvar'.", call. = FALSE)
+    else
+      sortvar <- setchar(sortvar, x$comparison)
+  }
   ##
   chkchar(text.overall)
   chkchar(text.direct)
@@ -269,17 +291,23 @@ forest.netsplit <- function(x,
          "- direct estimates (argument 'direct')\n",
          "- indirect estimates (argument 'indirect')")
   ##
-  if (missing(leftcols))
+  missing.leftcols <- missing(leftcols)
+  if (missing.leftcols)
     if (direct)
-      leftcols <- c("studlab", "k", "prop")
+      leftcols <- c("studlab", "k", "prop", "I2")
     else
       leftcols <- "studlab"
   ##
-  if (missing(leftlabs)) {
+  missing.leftlabs <- missing(leftlabs)
+  if (missing.leftlabs) {
     leftlabs <- rep(NA, length(leftcols))
     leftlabs[leftcols == "studlab"] <- "Comparison"
     leftlabs[leftcols == "k"] <- "Number of\nStudies"
     leftlabs[leftcols == "prop"] <- "Direct\nEvidence"
+    leftlabs[leftcols == "I2"] <- "I2"
+    leftlabs[leftcols == "tau2"] <- "tau2"
+    leftlabs[leftcols == "tau"] <- "tau"
+    leftlabs[leftcols == "Q"] <- "Q"
   }
   ##
   n.subgroup <- direct + indirect + overall + prediction
@@ -290,26 +318,32 @@ forest.netsplit <- function(x,
   ##
   if (missing(text.predict))
     if (!(length(x$level.predict) == 0) &&
-        x$level.comb != x$level.predict)
+        x$level.ma != x$level.predict)
       text.predict <- paste(text.predict, " (",
                             round(x$level.predict * 100), "%-PI)", sep = "")
   ##
   if (overall & n.subgroup > 1) {
     if (text.overall == text.predict)
-      stop("Text must be different for arguments 'text.overall' and 'text.predict'.")
+      stop("Text must be different for arguments 'text.overall' and ",
+           "'text.predict'.")
     if (text.overall == text.direct)
-      stop("Text must be different for arguments 'text.overall' and 'text.direct'.")
+      stop("Text must be different for arguments 'text.overall' and ",
+           "'text.direct'.")
     if (text.overall == text.indirect)
-      stop("Text must be different for arguments 'text.overall' and 'text.indirect'.")
+      stop("Text must be different for arguments 'text.overall' and ",
+           "'text.indirect'.")
   }
   ##
   if (prediction & n.subgroup > 1) {
     if (text.predict == text.overall)
-      stop("Text must be different for arguments 'text.predict' and 'text.overall'.")
+      stop("Text must be different for arguments 'text.predict' and ",
+           "'text.overall'.")
     if (text.predict == text.direct)
-      stop("Text must be different for arguments 'text.predict' and 'text.direct'.")
+      stop("Text must be different for arguments 'text.predict' and ",
+           "'text.direct'.")
     if (text.predict == text.indirect)
-      stop("Text must be different for arguments 'text.predict' and 'text.indirect'.")
+      stop("Text must be different for arguments 'text.predict' and ",
+           "'text.indirect'.")
   }
   ##
   ## Check for deprecated arguments in '...'
@@ -341,8 +375,17 @@ forest.netsplit <- function(x,
   show <- setchar(show, c("all", "both", "with.direct",
                           "direct.only", "indirect.only",
                           "reference.only"))
-
-
+  ##
+  if (show == "reference.only") {
+    warning("Argument 'show = \"reference.only\" replaced with ",
+            "'only.reference = TRUE'.",
+            call. = FALSE)
+    show <- "both"
+    if (missing.only.reference)
+      only.reference <- TRUE
+  }
+  
+  
   ##
   ##
   ## (2) Extract results for fixed effect and random effects model
@@ -350,8 +393,14 @@ forest.netsplit <- function(x,
   ##
   if (pooled == "fixed") {
     dat.direct <- x$direct.fixed
+    ##
     dat.indirect <- x$indirect.fixed
+    dat.indirect$Q <- dat.indirect$tau2 <-
+      dat.indirect$tau <- dat.indirect$I2 <- NA
+    ##
     dat.overall <- x$fixed
+    dat.overall$Q <- dat.overall$tau2 <-
+      dat.overall$tau <- dat.overall$I2 <- NA
     ##
     dat.direct$prop <- formatPT(x$prop.fixed, digits = digits.prop)
     dat.indirect$prop <- NA
@@ -362,8 +411,14 @@ forest.netsplit <- function(x,
   }
   else {
     dat.direct <- x$direct.random
+    ##
     dat.indirect <- x$indirect.random
+    dat.indirect$Q <- dat.indirect$tau2 <-
+      dat.indirect$tau <- dat.indirect$I2 <- NA
+    ##
     dat.overall <- x$random
+    dat.overall$Q <- dat.overall$tau2 <-
+      dat.overall$tau <- dat.overall$I2 <- NA
     ##
     dat.direct$prop <- formatPT(x$prop.random, digits = digits.prop)
     dat.indirect$prop <- NA
@@ -393,10 +448,14 @@ forest.netsplit <- function(x,
     dat.predict$TE <- NA
   ##
   dat.predict$seTE <- dat.predict$statistic <- dat.predict$p <-
-    dat.predict$z <- dat.predict$prop <- NA
+    dat.predict$Q <- NA
   ##
   dat.predict <- dat.predict[, c("comparison", "TE", "seTE",
-                                 "lower", "upper", "statistic", "p", "prop")]
+                                 "lower", "upper", "statistic", "p", "Q")]
+  dat.predict$tau2 <- NA
+  dat.predict$tau <- NA
+  dat.predict$I2 <- NA
+  dat.predict$prop <- NA
   ##
   dat.direct$comps <- dat.indirect$comps <-
     dat.overall$comps <- dat.predict$comps <- x$comparison
@@ -466,8 +525,9 @@ forest.netsplit <- function(x,
             !is.na(x$direct.random$TE) & is.na(x$indirect.random$TE))
   else if (show == "indirect.only")
     sel <- (is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
-            is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
-  else if (show == "reference.only") {
+             is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+  ##
+  if (only.reference) {
     if (x$reference.group == "") {
       warning("First treatment used as reference as argument ",
               "'reference.group' was unspecified in netsplit().",
@@ -476,17 +536,35 @@ forest.netsplit <- function(x,
         compsplit(x$comparison, x$sep.trts)[[1]][1]
     }
     ##
-    sel <-
+    sel.ref <-
       apply(!is.na(sapply(compsplit(x$comparison, x$sep.trts),
                           match, x$reference.group)), 2, sum) >= 1
+    ##
+    sel <- sel & sel.ref
   }
   ##
   dat.direct <- dat.direct[sel, ]
   dat.indirect <- dat.indirect[sel, ]
   dat.overall <- dat.overall[sel, ]
   dat.predict <- dat.predict[sel, ]
-
-
+  ##
+  if (!is.null(sortvar)) {
+    sortvar <- sortvar[sel]
+    ##
+    o <- order(sortvar)
+    ##
+    dat.direct <- dat.direct[o, ]
+    dat.indirect <- dat.indirect[o, ]
+    dat.overall <- dat.overall[o, ]
+    dat.predict <- dat.predict[o, ]
+  }
+  ##
+  if (direct & all(is.na(dat.direct$I2)) & missing.leftcols) {
+    leftlabs <- leftlabs[leftcols != "I2"]
+    leftcols <- leftcols[leftcols != "I2"]
+  }
+  
+  
   ##
   ##
   ## (4) Forest plot
@@ -532,8 +610,8 @@ forest.netsplit <- function(x,
     ##
     forest(m,
            digits = digits,
-           comb.fixed = FALSE, comb.random = FALSE,
-           hetstat = FALSE,
+           fixed = FALSE, random = FALSE,
+           hetstat = FALSE, test.subgroup = FALSE,
            leftcols = leftcols,
            leftlabs = leftlabs,
            rightcols = rightcols,
@@ -587,8 +665,8 @@ forest.netsplit <- function(x,
     ##
     forest(m,
            digits = digits,
-           comb.fixed = FALSE, comb.random = FALSE,
-           hetstat = FALSE,
+           fixed = FALSE, random = FALSE,
+           overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
            leftcols = leftcols,
            leftlabs = leftlabs,
            rightcols = rightcols,
@@ -606,3 +684,15 @@ forest.netsplit <- function(x,
 
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netsplit
+#' @method plot netsplit
+#' @export
+#'
+
+plot.netsplit <- function(x, ...)
+  forest(x, ...)

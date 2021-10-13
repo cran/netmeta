@@ -3,8 +3,9 @@ nma.ruecker <- function(TE, seTE,
                         treat1.pos, treat2.pos,
                         narms, studlab,
                         sm = "",
-                        level, level.comb,
-                        seTE.orig, tau.direct = 0, sep.trts = ":") {
+                        level, level.ma,
+                        seTE.orig, tau.direct = 0, sep.trts = ":",
+                        method.tau = "DL") {
   
   
   w.pooled <- 1 / seTE^2
@@ -127,9 +128,10 @@ nma.ruecker <- function(TE, seTE,
     I2 <- lower.I2 <- upper.I2 <- NA
   }
   else {
-    tau2 <- max(0, (Q - df) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
+    tau2 <-
+      max(0, (Q - df) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
     tau <- sqrt(tau2)
-    ci.I2 <- meta:::isquared(Q, df, level.comb)
+    ci.I2 <- isquared(Q, df, level.ma)
     I2 <- ci.I2$TE
     lower.I2 <- ci.I2$lower
     upper.I2 <- ci.I2$upper
@@ -189,7 +191,7 @@ nma.ruecker <- function(TE, seTE,
   TE.pooled <- all
   seTE.pooled <- sqrt(R)
   ##
-  ci.pooled <- meta::ci(all, sqrt(R), level = level.comb)
+  ci.pooled <- meta::ci(all, sqrt(R), level = level.ma)
   ##
   lower.pooled <- ci.pooled$lower
   upper.pooled <- ci.pooled$upper
@@ -241,12 +243,16 @@ nma.ruecker <- function(TE, seTE,
   ##
   B.matrix <- B[do.call(order, data.frame(Bo)), , drop = FALSE]
   ##
-  TE.direct   <- matrix(NA, ncol = length(names.treat),
-                        nrow = length(names.treat))
-  seTE.direct <- matrix(NA, ncol = length(names.treat),
-                        nrow = length(names.treat))
-  rownames(TE.direct)   <- colnames(TE.direct) <- names.treat
-  rownames(seTE.direct) <- colnames(seTE.direct) <- names.treat
+  TE.direct <- seTE.direct <-
+    Q.direct <- tau2.direct <- I2.direct <-
+      matrix(NA, ncol = length(names.treat), nrow = length(names.treat))
+  ##
+  rownames(TE.direct) <- colnames(TE.direct) <-
+    rownames(seTE.direct) <- colnames(seTE.direct) <-
+    rownames(Q.direct) <- colnames(Q.direct) <-
+    rownames(tau2.direct) <- colnames(tau2.direct) <-
+    rownames(I2.direct) <- colnames(I2.direct) <-
+    names.treat
   ##
   C.matrix <- B.matrix[!duplicated(B.matrix), , drop = FALSE]
   ##
@@ -258,17 +264,17 @@ nma.ruecker <- function(TE, seTE,
     ##
     selstud <- treat1 == sel.treat1 & treat2 == sel.treat2
     ##
-    m.i <-
+    m.i.tau.preset <-
       suppressWarnings(metagen(TE, seTE.orig, subset = selstud,
                                tau.preset = tau.direct, method.tau.ci = ""))
     ##
     if (is.na(tau.direct) | tau.direct == 0) {
-      TE.i   <- m.i$TE.fixed
-      seTE.i <- m.i$seTE.fixed
+      TE.i   <- m.i.tau.preset$TE.fixed
+      seTE.i <- m.i.tau.preset$seTE.fixed
     }
     else {
-      TE.i   <- m.i$TE.random
-      seTE.i <- m.i$seTE.random
+      TE.i   <- m.i.tau.preset$TE.random
+      seTE.i <- m.i.tau.preset$seTE.random
     }
     ##
     TE.direct[sel.treat1, sel.treat2]   <- TE.i
@@ -276,9 +282,22 @@ nma.ruecker <- function(TE, seTE,
     ##
     TE.direct[sel.treat2, sel.treat1]   <- -TE.i
     seTE.direct[sel.treat2, sel.treat1] <- seTE.i
+    ##
+    m.i <-
+      suppressWarnings(metagen(TE, seTE.orig, subset = selstud,
+                               method.tau = method.tau,
+                               method.tau.ci = ""))
+    ##
+    Q.direct[sel.treat1, sel.treat2] <-
+      Q.direct[sel.treat2, sel.treat1] <- m.i$Q
+    tau2.direct[sel.treat1, sel.treat2] <-
+      tau2.direct[sel.treat2, sel.treat1] <- m.i$tau2
+    I2.direct[sel.treat1, sel.treat2] <-
+      I2.direct[sel.treat2, sel.treat1] <- m.i$I2
+    
   }
   ##
-  ci.direct <- meta::ci(TE.direct, seTE.direct, level = level.comb)
+  ci.direct <- meta::ci(TE.direct, seTE.direct, level = level.ma)
   ##
   lower.direct <- ci.direct$lower
   upper.direct <- ci.direct$upper
@@ -330,7 +349,7 @@ nma.ruecker <- function(TE, seTE,
               ##
               sm = sm,
               level = level,
-              level.comb = level.comb,
+              level.ma = level.ma,
               ##
               A.matrix = A.matrix,
               B.matrix = B,
@@ -348,6 +367,10 @@ nma.ruecker <- function(TE, seTE,
               upper.direct = upper.direct,
               statistic.direct = statistic.direct,
               pval.direct = pval.direct,
+              ##
+              Q.direct = Q.direct,
+              tau2.direct = tau2.direct,
+              I2.direct = I2.direct,
               ##
               Q.decomp = Q.decomp
               )

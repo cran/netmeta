@@ -9,34 +9,46 @@ netcomb(
   inactive = NULL,
   sep.comps = "+",
   C.matrix,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random | !is.null(tau.preset),
+  fixed = x$fixed,
+  random = x$random | !is.null(tau.preset),
   tau.preset = NULL,
-  details.chkident = FALSE
+  details.chkident = FALSE,
+  nchar.comps = x$nchar.trts,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
 )
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}
 
 \item{inactive}{A character string defining the inactive treatment
-(see Details).}
+component (see Details).}
 
 \item{sep.comps}{A single character to define separator between
 treatment components.}
 
 \item{C.matrix}{C matrix (see Details).}
 
-\item{comb.fixed}{A logical indicating whether a fixed effects
-(common effects) network meta-analysis should be conducted.}
+\item{fixed}{A logical indicating whether a fixed effects / common
+effects network meta-analysis should be conducted.}
 
-\item{comb.random}{A logical indicating whether a random effects
-network meta-analysis should be conducted.}
+\item{random}{A logical indicating whether a random effects network
+meta-analysis should be conducted.}
 
 \item{tau.preset}{An optional value for the square-root of the
 between-study variance \eqn{\tau^2}.}
 
 \item{details.chkident}{A logical indicating whether details on
 unidentifiable components should be printed.}
+
+\item{nchar.comps}{A numeric defining the minimum number of
+characters used to create unique names for components (see
+Details).}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \value{
 An object of class \code{netcomb} with corresponding \code{print},
@@ -48,8 +60,8 @@ containing the following components:
 \item{TE}{Estimate of treatment effect, i.e. difference between
   first and second treatment.}
 \item{seTE}{Standard error of treatment estimate.}
-\item{seTE.adj}{Standard error of treatment estimate, adjusted for
-  multi-arm studies.}
+\item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+  estimate, adjusted for multi-arm studies.}
 \item{design}{Design of study providing pairwise comparison.}
 \item{event1}{Number of events in first treatment group.}
 \item{event2}{Number of events in second treatment group.}
@@ -144,8 +156,8 @@ containing the following components:
 \item{pval.Comp.fixed, pval.Comp.random}{A vector with p-values for
   the overall effect of components (fixed and random effects
   model).}
-\item{Comb.fixed, Comb.random}{A vector of combination effects (fixed
-  and random effects model).}
+\item{Comb.fixed, Comb.random}{A vector of combination effects
+  (fixed and random effects model).}
 \item{seComb.fixed, seComb.random}{A vector with corresponding
   standard errors (fixed and random effects model).}
 \item{lower.Comb.fixed, lower.Comb.random}{A vector with lower
@@ -154,9 +166,9 @@ containing the following components:
 \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
   confidence limits for combinations (fixed and random effects
   model).}
-\item{statistic.Comb.fixed, statistic.Comb.random}{A vector with z-values for
-  the overall effect of combinations (fixed and random effects
-  model).}
+\item{statistic.Comb.fixed, statistic.Comb.random}{A vector with
+  z-values for the overall effect of combinations (fixed and random
+  effects model).}
 \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
   the overall effect of combinations (fixed and random effects
   model).}
@@ -185,12 +197,12 @@ containing the following components:
 \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 \item{C.matrix}{As defined above.}
 \item{sm}{Summary measure.}
-\item{level.comb}{Level for confidence intervals.}
-\item{comb.fixed, comb.random, tau.preset}{As defined above.}
+\item{level.ma}{Level for confidence intervals.}
+\item{fixed, random, tau.preset}{As defined above.}
 \item{sep.trts}{A character used in comparison names as separator
   between treatment labels.}
-\item{nchar.trts}{A numeric defining the minimum number of
-  characters used to create unique treatment and component names.}
+\item{nchar.comps}{A numeric defining the minimum number of
+  characters used to create unique component names.}
 \item{inactive, sep.comps}{As defined above.}
 \item{backtransf}{A logical indicating whether results should be
   back transformed in printouts and forest plots.}
@@ -223,7 +235,7 @@ implies that common components cancel out in comparisons.
 
 The additive CNMA model has been implemented using Bayesian methods
 (Mills et al., 2012; Welton et al., 2013). This function implements
-the additive model in a frequentist way (Rücker et al., 2019).
+the additive model in a frequentist way (Rücker et al., 2020).
 
 The underlying multivariate model is given by
 
@@ -255,6 +267,25 @@ Argument \code{sep.comps} can be used to specify the separator
 between individual components. By default, the matrix \strong{C} is
 calculated internally from treatment names. However, it is possible
 to specify a different matrix using argument \code{C.matrix}.
+
+By default, component names are not abbreviated in
+printouts. However, in order to get more concise printouts,
+argument \code{nchar.comps} can be used to define the minimum
+number of characters for abbreviated component names (see
+\code{\link{abbreviate}}, argument \code{minlength}). R function
+\code{\link{treats}} is utilised internally to create abbreviated
+component names.
+}
+\note{
+This function calculates effects for individual components and
+complex interventions present in the network.
+
+R function \code{\link{netcomplex}} can be used to calculate the
+effect for arbitrary complex interventions in a component network
+meta-analysis. Furthermore, R function \code{\link{netcomparison}}
+can be used to calculate the effect for comparisons of two
+arbitrary complex intervention in a component network
+meta-analysis.
 }
 \examples{
 data(Linde2016)
@@ -268,15 +299,15 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, ref = "placebo",
-                sm = "OR", comb.fixed = FALSE)
-summary(net1)
+                sm = "OR", fixed = FALSE)
+net1
 forest(net1, xlim = c(0.2, 50))
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
 #
 nc1 <- netcomb(net1, inactive = "placebo")
-summary(nc1)
+nc1
 forest(nc1, xlim = c(0.2, 50))
 
 \dontrun{
@@ -300,15 +331,15 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, ref = "placebo",
                 seq = trts,
-                sm = "OR", comb.fixed = FALSE)
-summary(net1)
+                sm = "OR", fixed = FALSE)
+net1
 forest(net1, xlim = c(0.2, 50))
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
 #
 nc1 <- netcomb(net1, inactive = "placebo")
-summary(nc1)
+nc1
 forest(nc1, xlim = c(0.2, 50))
 }
 
@@ -326,10 +357,10 @@ trials provides useful estimates of combination therapies.
 \emph{Journal of Clinical Epidemiology},
 \bold{65}, 1282--8
 
-Rücker G, Petropoulou M, Schwarzer G (2019):
+Rücker G, Petropoulou M, Schwarzer G (2020):
 Network meta-analysis of multicomponent interventions.
 \emph{Biometrical Journal},
-1--14, https://doi.org/10.1002/bimj.201800167
+\bold{62}, 808--21
 
 Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009):
 Mixed treatment comparison meta-analysis of complex interventions:
@@ -338,8 +369,9 @@ psychological interventions in coronary heart disease.
 \bold{169}: 1158--65
 }
 \seealso{
-\link{discomb}, \link{netmeta}, \link{forest.netcomb},
-  \link{print.netcomb}
+\code{\link{discomb}}, \code{\link{netmeta}},
+  \code{\link{forest.netcomb}}, \code{\link{print.netcomb}},
+  \code{\link{netcomplex}}, \code{\link{netcomparison}}
 }
 \author{
 Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido

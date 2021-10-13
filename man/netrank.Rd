@@ -5,14 +5,24 @@
 \alias{print.netrank}
 \title{Frequentist method to rank treatments in network}
 \usage{
-netrank(x, small.values = x$small.values, method, nsim)
+netrank(
+  x,
+  small.values = x$small.values,
+  method,
+  nsim,
+  fixed = x$fixed,
+  random = x$random,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
+)
 
 \method{print}{netrank}(
   x,
-  comb.fixed = x$x$comb.fixed,
-  comb.random = x$x$comb.random,
+  fixed = x$fixed,
+  random = x$random,
   sort = TRUE,
   digits = max(4, .Options$digits - 3),
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
@@ -29,20 +39,23 @@ calculated.}
 
 \item{nsim}{Number of simulations to calculate SUCRAs.}
 
-\item{comb.fixed}{A logical indicating whether to print P-scores or
+\item{fixed}{A logical indicating whether to print P-scores or
 SUCRAs for the fixed effects (common effects) model.}
 
-\item{comb.random}{A logical indicating whether to print P-scores
+\item{random}{A logical indicating whether to print P-scores
 or SUCRAs for the random effects model.}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments passed on to
+\code{\link{print.data.frame}} function (used internally).}
 
 \item{sort}{A logical indicating whether printout should be sorted
 by decreasing P-score.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{\link{print.default}}.}
-
-\item{\dots}{Additional arguments passed on to
-\code{\link{print.data.frame}} function (used internally).}
 }
 \value{
 An object of class \code{netrank} with corresponding \code{print}
@@ -59,8 +72,8 @@ function. The object is a list containing the following components:
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
-Ranking treatments in frequentist network meta-analysis without
-resampling methods.
+Ranking treatments in frequentist network meta-analysis with and
+without resampling methods.
 }
 \details{
 Treatments are ranked based on a network meta-analysis. Ranking is
@@ -98,7 +111,7 @@ data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD",
-                comb.random = FALSE)
+                random = FALSE)
 
 nr1 <- netrank(net1)
 nr1
@@ -143,6 +156,6 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 }
 \author{
 Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
-  Schwarzer \email{sc@imbi.uni-freiburg.de}, Thodoris
+  Schwarzer \email{sc@imbi.uni-freiburg.de}, Theodoros
   Papakonstantinou \email{dev@tpapak.com}
 }

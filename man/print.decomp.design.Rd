@@ -12,6 +12,8 @@
   digits.tau2 = gs("digits.tau2"),
   scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
+  nchar.trts = x$nchar.trts,
+  legend = TRUE,
   ...
 )
 }
@@ -37,6 +39,12 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 
 \item{big.mark}{A character used as thousands separator.}
 
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
+
 \item{\dots}{Additional arguments (ignored at the moment).}
 }
 \description{
@@ -45,9 +53,19 @@ Print method for objects of class \code{decomp.design}.
 \examples{
 data(Senn2013)
 
+# Only consider first five studies (to reduce runtime of example)
+#
+studies <- unique(Senn2013$studlab)
+Senn2013.5 <- subset(Senn2013, studlab \%in\% studies[1:5])
+
+# Conduct network meta-analysis with placebo as reference treatment
+#
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD")
-print(decomp.design(net1))
+                data = Senn2013.5, sm = "MD", reference = "plac")
+
+# Decomposition of Cochran's Q
+#
+decomp.design(net1)
 
 }
 \seealso{

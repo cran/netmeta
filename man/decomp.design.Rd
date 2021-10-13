@@ -4,7 +4,12 @@
 \alias{decomp.design}
 \title{Design-based decomposition of Cochran's Q in network meta-analysis}
 \usage{
-decomp.design(x, tau.preset = x$tau.preset, warn = TRUE)
+decomp.design(
+  x,
+  tau.preset = x$tau.preset,
+  warn = TRUE,
+  nchar.trts = x$nchar.trts
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}
@@ -14,9 +19,13 @@ between-study variance \eqn{\tau^2} (see Details).}
 
 \item{warn}{A logical indicating whether warnings should be
 printed.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
 }
 \value{
-A list containing the following components:
+Network meta-analysis with a single design: \code{NULL}. Otherwise,
+a list containing the following components:
 \item{Q.decomp}{Data frame with Q statistics (variable \code{Q})
   based on the fixed effects model to assess the
   homogeneity/consistency in the whole network, within designs, and
@@ -105,11 +114,15 @@ to the inconsistency assessment. These designs are not included in
 \examples{
 data(Senn2013)
 
-# Generation of an object of class 'netmeta' with reference
-# treatment 'plac', i.e. placebo
+# Only consider first five studies (to reduce runtime of example)
+#
+studies <- unique(Senn2013$studlab)
+Senn2013.5 <- subset(Senn2013, studlab \%in\% studies[1:5])
+
+# Conduct network meta-analysis with placebo as reference treatment
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD", reference = "plac")
+                data = Senn2013.5, sm = "MD", reference = "plac")
 
 # Decomposition of Cochran's Q
 #

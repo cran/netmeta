@@ -18,22 +18,25 @@ discomb(
   C.matrix,
   sm,
   level = gs("level"),
-  level.comb = gs("level.comb"),
-  comb.fixed = gs("comb.fixed"),
-  comb.random = gs("comb.random") | !is.null(tau.preset),
-  reference.group = "",
+  level.ma = gs("level.ma"),
+  fixed = gs("fixed"),
+  random = gs("random") | !is.null(tau.preset),
+  reference.group,
   baseline.reference = TRUE,
   seq = NULL,
   tau.preset = NULL,
   tol.multiarm = 0.001,
-  tol.multiarm.se = tol.multiarm,
+  tol.multiarm.se = NULL,
   details.chkmultiarm = FALSE,
   details.chkident = FALSE,
   sep.trts = ":",
-  nchar.trts = 666,
+  nchar.comps = 666,
   backtransf = gs("backtransf"),
   title = "",
-  warn = TRUE
+  warn = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
+  nchar.trts = nchar.comps,
+  ...
 )
 }
 \arguments{
@@ -58,7 +61,7 @@ information.}
 be used.}
 
 \item{inactive}{A character string defining the inactive treatment
-(see Details).}
+component (see Details).}
 
 \item{sep.comps}{A single character to define separator between
 treatment components.}
@@ -72,16 +75,17 @@ e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
 \item{level}{The level used to calculate confidence intervals for
 individual comparisons.}
 
-\item{level.comb}{The level used to calculate confidence intervals
-for pooled estimates.}
+\item{level.ma}{The level used to calculate confidence intervals
+for network estimates.}
 
-\item{comb.fixed}{A logical indicating whether a fixed effects
-(common effects) network meta-analysis should be conducted.}
+\item{fixed}{A logical indicating whether a fixed effects / common
+effects network meta-analysis should be conducted.}
 
-\item{comb.random}{A logical indicating whether a random effects
+\item{random}{A logical indicating whether a random effects
 network meta-analysis should be conducted.}
 
-\item{reference.group}{Reference treatment.}
+\item{reference.group}{Reference treatment (first treatment is used
+if argument is missing).}
 
 \item{baseline.reference}{A logical indicating whether results
 should be expressed as comparisons of other treatments versus the
@@ -100,7 +104,8 @@ design.}
 
 \item{tol.multiarm.se}{A numeric for the tolerance for consistency
 of standard errors in multi-arm studies which are consistent by
-design.}
+design. This check is not conducted if the argument is
+\code{NULL}.}
 
 \item{details.chkmultiarm}{A logical indicating whether treatment
 estimates and / or variances of multi-arm studies with
@@ -113,8 +118,9 @@ unidentifiable components should be printed.}
 \item{sep.trts}{A character used in comparison names as separator
 between treatment labels.}
 
-\item{nchar.trts}{A numeric defining the minimum number of
-characters used to create unique treatment names (see Details).}
+\item{nchar.comps}{A numeric defining the minimum number of
+characters used to create unique names for components (see
+Details).}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
@@ -127,6 +133,14 @@ example.}
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded from meta-analysis due to zero
 standard errors).}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{nchar.trts}{Deprecated argument (replaced by
+\code{nchar.comps}).}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \value{
 An object of classes \code{discomb} and \code{netcomb} with
@@ -139,8 +153,8 @@ components:
 \item{TE}{Estimate of treatment effect, i.e. difference between
   first and second treatment.}
 \item{seTE}{Standard error of treatment estimate.}
-\item{seTE.adj}{Standard error of treatment estimate, adjusted for
-  multi-arm studies.}
+\item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+  estimate, adjusted for multi-arm studies.}
 \item{event1}{Number of events in first treatment group.}
 \item{event2}{Number of events in second treatment group.}
 \item{n1}{Number of observations in first treatment group.}
@@ -243,12 +257,12 @@ components:
 \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 \item{C.matrix}{As defined above.}
 \item{sm}{Summary measure.}
-\item{level.comb}{Level for confidence intervals.}
-\item{comb.fixed, comb.random, tau.preset}{As defined above.}
+\item{level.ma}{Level for confidence intervals.}
+\item{fixed, random, tau.preset}{As defined above.}
 \item{sep.trts}{A character used in comparison names as separator
   between treatment labels.}
-\item{nchar.trts}{A numeric defining the minimum number of
-  characters used to create unique treatment and component names.}
+\item{nchar.comps}{A numeric defining the minimum number of
+  characters used to create unique component names.}
 \item{inactive, sep.comps}{As defined above.}
 \item{backtransf}{A logical indicating whether results should be
   back transformed in printouts and forest plots.}
@@ -286,7 +300,7 @@ networks.
 
 The additive CNMA model has been implemented using Bayesian methods
 (Mills et al., 2012; Welton et al., 2013). This function implements
-the additive model in a frequentist way (Rücker et al., 2019).
+the additive model in a frequentist way (Rücker et al., 2020).
 
 The underlying multivariate model is given by
 
@@ -319,6 +333,25 @@ Argument \code{sep.comps} can be used to specify the separator
 between individual components. By default, the matrix \strong{C} is
 calculated internally from treatment names. However, it is possible
 to specify a different matrix using argument \code{C.matrix}.
+
+By default, component names are not abbreviated in
+printouts. However, in order to get more concise printouts,
+argument \code{nchar.comps} can be used to define the minimum
+number of characters for abbreviated component names (see
+\code{\link{abbreviate}}, argument \code{minlength}). R function
+\code{\link{treats}} is utilised internally to create abbreviated
+component names.
+}
+\note{
+This function calculates effects for individual components and
+complex interventions present in the network.
+
+R function \code{\link{netcomplex}} can be used to calculate the
+effect for arbitrary complex interventions in a component network
+meta-analysis. Furthermore, R function \code{\link{netcomparison}}
+can be used to calculate the effect for comparisons of two
+arbitrary complex intervention in a component network
+meta-analysis.
 }
 \examples{
 # Artificial dataset
@@ -385,10 +418,10 @@ trials provides useful estimates of combination therapies.
 \emph{Journal of Clinical Epidemiology},
 \bold{65}, 1282--8
 
-Rücker G, Petropoulou M, Schwarzer G (2019):
+Rücker G, Petropoulou M, Schwarzer G (2020):
 Network meta-analysis of multicomponent interventions.
 \emph{Biometrical Journal},
-1--14, https://doi.org/10.1002/bimj.201800167
+\bold{62}, 808--21
 
 Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009):
 Mixed treatment comparison meta-analysis of complex interventions:
@@ -397,8 +430,10 @@ psychological interventions in coronary heart disease.
 \bold{169}: 1158--65
 }
 \seealso{
-\link{netcomb}, \link{forest.netcomb},
-  \link{summary.netcomb}, \link{netmeta}, \link{netconnection}
+\code{\link{netcomb}}, \code{\link{forest.netcomb}},
+  \code{\link{summary.netcomb}}, \code{\link{netmeta}},
+  \code{\link{netconnection}}, \code{\link{netcomplex}},
+  \code{\link{netcomparison}}
 }
 \author{
 Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido

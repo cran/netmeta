@@ -1,18 +1,18 @@
 formatComp <- function(x,
                        backtransf, sm, level,
-                       trts, trts.abbr,
-                       digits, digits.stat, digits.pval.Q,
-                       scientific.pval, big.mark) {
+                       comps, comps.abbr, sep.comps,
+                       digits, digits.stat, digits.pval,
+                       scientific.pval, zero.pval, JAMA.pval,
+                       big.mark) {
   
   
-  formatN <- meta:::formatN
-  relative <- meta:::is.relative.effect(sm)
+  relative <- is.relative.effect(sm)
   
   
   sm.lab <- sm
   ##
   if (!backtransf & relative)
-    sm.lab <- paste("log", sm, sep = "")
+    sm.lab <- paste0("log", sm)
   ##  
   ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
   
@@ -28,20 +28,20 @@ formatComp <- function(x,
     res$upper <- exp(res$upper)
   }
   ##
-  res$treat1 <- as.character(factor(res$treat1,
-                                    levels = trts, labels = trts.abbr))
-  res$treat2 <- as.character(factor(res$treat2,
-                                    levels = trts, labels = trts.abbr))
+  res$treat1 <- compos(res$treat1, comps, comps.abbr, sep.comps)
+  res$treat2 <- compos(res$treat2, comps, comps.abbr, sep.comps)
   ##
   res$TE <- formatN(res$TE, digits, "NA", big.mark)
-  res$lower <- meta:::formatCI(formatN(round(res$lower, digits),
+  res$lower <- formatCI(formatN(round(res$lower, digits),
                                        digits, "NA", big.mark),
                                formatN(round(res$upper, digits),
                                        digits, "NA", big.mark))
   res$statistic <- formatN(res$statistic, digits.stat, big.mark = big.mark)
-  res$p <- meta:::formatPT(res$p,
-                           digits = digits.pval.Q,
-                           scientific = scientific.pval)
+  res$p <- formatPT(res$p,
+                           digits = digits.pval,
+                           scientific = scientific.pval,
+                           zero = zero.pval,
+                           JAMA = JAMA.pval)
   ##
   res$upper <- res$z <- NULL
   ##

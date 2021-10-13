@@ -8,16 +8,24 @@
 rankogram(
   x,
   nsim = 1000,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
-  small.values = x$small.values
+  fixed = x$fixed,
+  random = x$random,
+  small.values = x$small.values,
+  cumulative.rankprob = FALSE,
+  nchar.trts = x$nchar.trts,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
 )
 
 \method{print}{rankogram}(
   x,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
-  digits = max(3, .Options$digits - 4),
+  fixed = x$fixed,
+  random = x$random,
+  cumulative.rankprob = x$cumulative.rankprob,
+  nchar.trts = x$nchar.trts,
+  digits = gs("digits.prop"),
+  legend = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
@@ -26,21 +34,33 @@ rankogram(
 
 \item{nsim}{Number of simulations.}
 
-\item{comb.fixed}{A logical indicating to compute ranking
+\item{fixed}{A logical indicating to compute ranking
 probabilities and SUCRAs for the fixed effects (common effects)
 model.}
 
-\item{comb.random}{A logical indicating to compute ranking
+\item{random}{A logical indicating to compute ranking
 probabilities and SUCRAs for the random effects model.}
 
 \item{small.values}{A character string specifying whether small
 treatment effects indicate a beneficial (\code{"good"}) or
 harmful (\code{"bad"}) effect, can be abbreviated.}
 
+\item{cumulative.rankprob}{A logical indicating whether cumulative
+ranking probabilites should be printed.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments for printing.}
+
 \item{digits}{Minimal number of significant digits, see
 \code{\link{print.default}}.}
 
-\item{\dots}{Additional arguments for printing.}
+\item{legend}{A logical indicating whether a legend should be
+printed.}
 }
 \value{
 An object of class \code{rankogram} with corresponding \code{print}
@@ -54,7 +74,13 @@ following components:
   of each treatment being at each possible rank for the random
   effects model.}
 \item{ranking.random}{SUCRA values for the random effects model.}
-\item{nsim, comb.fixed, comb.random}{As defined above},
+\item{cumrank.matrix.fixed}{Numeric matrix giving the cumulative
+  ranking probability of each treatment for the
+  fixed effects model.}
+\item{cumrank.matrix.random}{Numeric matrix giving the cumulative
+  ranking probability of each treatment for the random effects
+  model.}
+\item{nsim, fixed, random}{As defined above},
 \item{small.values, x}{As defined above},
 }
 \description{
@@ -78,8 +104,9 @@ net1 <- netmeta(p1, small.values = "good")
 
 ran1 <- rankogram(net1, nsim = 100)
 ran1
+print(ran1, cumulative.rankprob = TRUE)
 
-plot(ran1)      
+plot(ran1)
 
 }
 \references{
@@ -93,5 +120,6 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \code{\link{netmeta}}, \code{\link{netrank}}
 }
 \author{
-Thodoris Papakonstantinou \email{dev@tpapak.com}
+Theodoros Papakonstantinou \email{dev@tpapak.com}, Guido
+  Schwarzer \email{sc@imbi.uni-freiburg.de}
 }

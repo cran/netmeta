@@ -72,7 +72,8 @@ events in two treatment arms are to be included in the
 meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
 or \code{"OR"}).}
 
-\item{reference.group}{Reference treatment.}
+\item{reference.group}{Reference treatment (first treatment is used
+if argument is missing).}
 
 \item{keep.all.comparisons}{A logical indicating whether all
 pairwise comparisons or only comparisons with the study-specific
@@ -199,26 +200,19 @@ frame.
 In the long arm-based format, argument \code{studlab} is mandatory
 to identify rows contributing to individual studies.
 
-Additional arguments for meta-analysis functions can be provided using
-argument \code{'\dots'}. The following is a list of some important
-arguments:
-\tabular{cll}{
-Argument \tab Description \tab R function \cr
-\code{sm} \tab Summary measure \tab \code{\link{metabin}},
-  \code{\link{metacont}}, \code{\link{metainc}},
-  \code{\link{metagen}} \cr
-\code{method} \tab Meta-analysis method \tab \code{\link{metabin}},
-  \code{\link{metainc}} \cr
-\code{method.tau} \tab Estimation of between-study variance \tab
-  \code{\link{metabin}}, \code{\link{metacont}},
-  \code{\link{metainc}}, \code{\link{metagen}} \cr
-\code{method.smd} \tab Standardised mean difference \tab
-  \code{\link{metacont}}
-}
-More information on these as well as other arguments is given in
-the help pages of R functions \code{\link{metabin}},
-\code{\link{metacont}}, \code{\link{metainc}}, and
-\code{\link{metagen}}, respectively.
+Additional arguments for meta-analysis functions can be provided
+using argument '\dots'. The most important argument is \code{sm}
+defining the summary measure. More information on this and other
+arguments is given in the help pages of R functions
+\code{\link{metabin}}, \code{\link{metacont}},
+\code{\link{metainc}}, and \code{\link{metagen}}, respectively.
+
+For standardised mean differences (argument \code{sm = "SMD"}),
+equations (4) and (5) in Crippa & Orsini (2016) are used to
+calculated SMDs and standard errors. These equations guarantee
+consistent SMDs and standard errors for multi-arm studies. Note,
+the summary measure is actually Cohen's d as Hedges' g is not
+consistent in multi-arm studies.
 
 The value of pairwise is a data frame with as many rows as there
 are pairwise comparisons. For each study with \emph{p} treatments,
@@ -246,19 +240,25 @@ A reduced data set with basic comparisons (Rücker & Schwarzer,
 FALSE}. Furthermore, the reference group for the basic comparisons
 can be specified with argument \code{reference.group}.
 }
+\note{
+This function must not be confused with \code{\link{netpairwise}}
+which can be used to conduct pairwise meta-analyses for all
+comparisons with direct evidence in a network meta-analysis.
+}
 \examples{
 # Example using continuous outcomes (internal call of function
 # metacont)
 #
-data(parkinson)
+data(Franchini2012)
 # Transform data from arm-based format to contrast-based format
 p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
                n = list(n1, n2, n3),
                mean = list(y1, y2, y3),
                sd = list(sd1, sd2, sd3),
-               data = parkinson, studlab = Study)
+               data = Franchini2012, studlab = Study)
 p1
 
+\dontrun{
 # Conduct network meta-analysis
 #
 net1 <- netmeta(p1)
@@ -279,9 +279,9 @@ netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
 # metagen)
 #
 # Calculate standard error for means y1, y2, y3
-parkinson$se1 <- with(parkinson, sqrt(sd1^2 / n1))
-parkinson$se2 <- with(parkinson, sqrt(sd2^2 / n2))
-parkinson$se3 <- with(parkinson, sqrt(sd3^2 / n3))
+Franchini2012$se1 <- with(Franchini2012, sqrt(sd1^2 / n1))
+Franchini2012$se2 <- with(Franchini2012, sqrt(sd2^2 / n2))
+Franchini2012$se3 <- with(Franchini2012, sqrt(sd3^2 / n3))
 # Transform data from arm-based format to contrast-based format
 # using means and standard errors (note, argument 'sm' has to be
 # used to specify that argument 'TE' is a mean difference)
@@ -289,7 +289,7 @@ p2 <- pairwise(list(Treatment1, Treatment2, Treatment3),
                TE = list(y1, y2, y3),
                seTE = list(se1, se2, se3),
                n = list(n1, n2, n3),
-               data = parkinson, studlab = Study,
+               data = Franchini2012, studlab = Study,
                sm = "MD")
 p2
 
@@ -299,12 +299,10 @@ p2
 all.equal(p1[, c("TE", "seTE", "studlab", "treat1", "treat2")],
           p2[, c("TE", "seTE", "studlab", "treat1", "treat2")])
 
-\dontrun{
 # Same result as network meta-analysis based on continuous outcomes
 # (object net1)
 net2 <- netmeta(p2)
 net2
-}
 
 # Example with binary data
 #
@@ -362,12 +360,20 @@ p5
 # Conduct network meta-analysis
 net5 <- netmeta(p5)
 net5
+}
 
+}
+\references{
+Crippa A, Orsini N (2016):
+Dose-response meta-analysis of differences in means.
+\emph{BMC Medical Research Methodology},
+\bold{16}:91.
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{metacont}},
   \code{\link{metagen}}, \code{\link{metabin}},
-  \code{\link{metainc}}, \code{\link{netgraph.netmeta}}
+  \code{\link{metainc}}, \code{\link{netgraph.netmeta}},
+  \code{\link{pairwise}}
 }
 \author{
 Gerta Rücker\email{ruecker@imbi.uni-freiburg.de}, Guido

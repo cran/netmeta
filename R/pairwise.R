@@ -40,7 +40,8 @@
 #'   events in two treatment arms are to be included in the
 #'   meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
 #'   or \code{"OR"}).
-#' @param reference.group Reference treatment.
+#' @param reference.group Reference treatment (first treatment is used
+#'   if argument is missing).
 #' @param keep.all.comparisons A logical indicating whether all
 #'   pairwise comparisons or only comparisons with the study-specific
 #'   reference group should be kept ('basic parameters').
@@ -116,26 +117,19 @@
 #' In the long arm-based format, argument \code{studlab} is mandatory
 #' to identify rows contributing to individual studies.
 #' 
-#' Additional arguments for meta-analysis functions can be provided using
-#' argument \code{'\dots'}. The following is a list of some important
-#' arguments:
-#' \tabular{cll}{
-#' Argument \tab Description \tab R function \cr
-#' \code{sm} \tab Summary measure \tab \code{\link{metabin}},
-#'   \code{\link{metacont}}, \code{\link{metainc}},
-#'   \code{\link{metagen}} \cr
-#' \code{method} \tab Meta-analysis method \tab \code{\link{metabin}},
-#'   \code{\link{metainc}} \cr
-#' \code{method.tau} \tab Estimation of between-study variance \tab
-#'   \code{\link{metabin}}, \code{\link{metacont}},
-#'   \code{\link{metainc}}, \code{\link{metagen}} \cr
-#' \code{method.smd} \tab Standardised mean difference \tab
-#'   \code{\link{metacont}}
-#' }
-#' More information on these as well as other arguments is given in
-#' the help pages of R functions \code{\link{metabin}},
-#' \code{\link{metacont}}, \code{\link{metainc}}, and
-#' \code{\link{metagen}}, respectively.
+#' Additional arguments for meta-analysis functions can be provided
+#' using argument '\dots'. The most important argument is \code{sm}
+#' defining the summary measure. More information on this and other
+#' arguments is given in the help pages of R functions
+#' \code{\link{metabin}}, \code{\link{metacont}},
+#' \code{\link{metainc}}, and \code{\link{metagen}}, respectively.
+#'
+#' For standardised mean differences (argument \code{sm = "SMD"}),
+#' equations (4) and (5) in Crippa & Orsini (2016) are used to
+#' calculated SMDs and standard errors. These equations guarantee
+#' consistent SMDs and standard errors for multi-arm studies. Note,
+#' the summary measure is actually Cohen's d as Hedges' g is not
+#' consistent in multi-arm studies.
 #' 
 #' The value of pairwise is a data frame with as many rows as there
 #' are pairwise comparisons. For each study with \emph{p} treatments,
@@ -163,6 +157,11 @@
 #' FALSE}. Furthermore, the reference group for the basic comparisons
 #' can be specified with argument \code{reference.group}.
 #'
+#' @note
+#' This function must not be confused with \code{\link{netpairwise}}
+#' which can be used to conduct pairwise meta-analyses for all
+#' comparisons with direct evidence in a network meta-analysis.
+#' 
 #' @return
 #' A data frame with the following columns:
 #' \item{TE}{Treatment estimate comparing treatment 'treat1' and
@@ -208,7 +207,14 @@
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{metacont}},
 #'   \code{\link{metagen}}, \code{\link{metabin}},
-#'   \code{\link{metainc}}, \code{\link{netgraph.netmeta}}
+#'   \code{\link{metainc}}, \code{\link{netgraph.netmeta}},
+#'   \code{\link{pairwise}}
+#' 
+#' @references
+#' Crippa A, Orsini N (2016):
+#' Dose-response meta-analysis of differences in means.
+#' \emph{BMC Medical Research Methodology},
+#' \bold{16}:91.
 #' 
 #' @keywords datagen
 #' 
@@ -216,15 +222,16 @@
 #' # Example using continuous outcomes (internal call of function
 #' # metacont)
 #' #
-#' data(parkinson)
+#' data(Franchini2012)
 #' # Transform data from arm-based format to contrast-based format
 #' p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
 #'                n = list(n1, n2, n3),
 #'                mean = list(y1, y2, y3),
 #'                sd = list(sd1, sd2, sd3),
-#'                data = parkinson, studlab = Study)
+#'                data = Franchini2012, studlab = Study)
 #' p1
 #' 
+#' \dontrun{
 #' # Conduct network meta-analysis
 #' #
 #' net1 <- netmeta(p1)
@@ -245,9 +252,9 @@
 #' # metagen)
 #' #
 #' # Calculate standard error for means y1, y2, y3
-#' parkinson$se1 <- with(parkinson, sqrt(sd1^2 / n1))
-#' parkinson$se2 <- with(parkinson, sqrt(sd2^2 / n2))
-#' parkinson$se3 <- with(parkinson, sqrt(sd3^2 / n3))
+#' Franchini2012$se1 <- with(Franchini2012, sqrt(sd1^2 / n1))
+#' Franchini2012$se2 <- with(Franchini2012, sqrt(sd2^2 / n2))
+#' Franchini2012$se3 <- with(Franchini2012, sqrt(sd3^2 / n3))
 #' # Transform data from arm-based format to contrast-based format
 #' # using means and standard errors (note, argument 'sm' has to be
 #' # used to specify that argument 'TE' is a mean difference)
@@ -255,7 +262,7 @@
 #'                TE = list(y1, y2, y3),
 #'                seTE = list(se1, se2, se3),
 #'                n = list(n1, n2, n3),
-#'                data = parkinson, studlab = Study,
+#'                data = Franchini2012, studlab = Study,
 #'                sm = "MD")
 #' p2
 #' 
@@ -265,12 +272,10 @@
 #' all.equal(p1[, c("TE", "seTE", "studlab", "treat1", "treat2")],
 #'           p2[, c("TE", "seTE", "studlab", "treat1", "treat2")])
 #' 
-#' \dontrun{
 #' # Same result as network meta-analysis based on continuous outcomes
 #' # (object net1)
 #' net2 <- netmeta(p2)
 #' net2
-#' }
 #' 
 #' # Example with binary data
 #' #
@@ -328,6 +333,7 @@
 #' # Conduct network meta-analysis
 #' net5 <- netmeta(p5)
 #' net5
+#' }
 #' 
 #' @export pairwise
 
@@ -350,11 +356,11 @@ pairwise <- function(treat,
   ## (1) Check arguments
   ##
   ##
-  meta:::chknumeric(incr, min = 0, length = 1)
-  meta:::chklogical(allincr)
-  meta:::chklogical(addincr)
-  meta:::chklogical(allstudies)
-  meta:::chklogical(warn)
+  chknumeric(incr, min = 0, length = 1)
+  chklogical(allincr)
+  chklogical(addincr)
+  chklogical(allstudies)
+  chklogical(warn)
   
   
   ##
@@ -367,16 +373,18 @@ pairwise <- function(treat,
     data <- sys.frame(sys.parent())
   mf <- match.call()
   ##
+  missing.reference.group <- missing(reference.group)
+  ##
   ## Catch studlab, treat, event, n, mean, sd, time from data:
   ##
   treat <- eval(mf[[match("treat", names(mf))]],
                 data, enclos = sys.frame(sys.parent()))
   ##
-  if (inherits(treat, "pairwise")) {
+  if (is.data.frame(treat) & !is.null(attr(treat, "pairwise"))) {
     is.pairwise <- TRUE
     res <- treat
     ##
-    if (missing(reference.group))
+    if (missing.reference.group)
       if (!is.null(attributes(treat)$reference.group))
         reference.group <- attributes(treat)$reference.group
     if (missing(keep.all.comparisons))
@@ -439,15 +447,9 @@ pairwise <- function(treat,
   else {
     is.pairwise <- FALSE
     ##
-    if (missing(reference.group))
-      reference.group <- ""
     if (missing(keep.all.comparisons))
       keep.all.comparisons <- TRUE
-    if (is.numeric(reference.group))
-      meta:::chknumeric(reference.group, length = 1)
-    else
-      meta:::chkchar(reference.group, length = 1)
-    meta:::chklogical(keep.all.comparisons)
+    chklogical(keep.all.comparisons)
     ##
     studlab <- eval(mf[[match("studlab", names(mf))]],
                     data, enclos = sys.frame(sys.parent()))
@@ -481,43 +483,43 @@ pairwise <- function(treat,
       if (is.list(event))
         chklist(event)
       else
-        meta:::chknumeric(event)
+        chknumeric(event)
     ##
     if (!is.null(n))
       if (is.list(n))
         chklist(n)
       else
-        meta:::chknumeric(n)
+        chknumeric(n)
     ##
     if (!is.null(mean))
       if (is.list(mean))
         chklist(mean)
       else
-        meta:::chknumeric(mean)
+        chknumeric(mean)
     ##
     if (!is.null(sd))
       if (is.list(sd))
         chklist(sd)
       else
-        meta:::chknumeric(sd)
+        chknumeric(sd)
     ##
     if (!is.null(TE))
       if (is.list(TE))
         chklist(TE)
       else
-        meta:::chknumeric(TE)
+        chknumeric(TE)
     ##
     if (!is.null(seTE))
       if (is.list(seTE))
         chklist(seTE)
       else
-        meta:::chknumeric(seTE)
+        chknumeric(seTE)
     ##
     if (!is.null(time))
       if (is.list(time))
         chklist(time)
       else
-        meta:::chknumeric(time)
+        chknumeric(time)
     
     
     if (!is.null(TE) & !is.null(seTE))
@@ -803,16 +805,35 @@ pairwise <- function(treat,
                           nrow = narms * (narms - 1) / 2)
       colnames(notunique) <- names.adddata
       ##
+      oneNA <- matrix(NA,
+                      ncol = length(names.adddata),
+                      nrow = narms * (narms - 1) / 2)
+      ##
+      allNA <- matrix(NA,
+                      ncol = length(names.adddata),
+                      nrow = narms * (narms - 1) / 2)
+      colnames(oneNA) <- names.adddata
+      ##
       n.ij <- 0
       ##
       for (i in 1:(narms - 1)) {
         for (j in (i + 1):narms) {
           n.ij <- n.ij + 1
-          notunique[n.ij, ] <- apply(adddata[[i]] != adddata[[j]], 2, anytrue)
+          notunique[n.ij, ] <-
+            apply(adddata[[i]] != adddata[[j]], 2, anytrue)
+          ##
+          allNA[n.ij, ] <- apply(is.na(adddata[[j]]), 2, all)
+          ##
+          oneNA[n.ij, ] <-
+            apply(is.na(adddata[[i]]) & !is.na(adddata[[j]]), 2, anytrue)
         }
       }
       ##
       notunique <- apply(notunique, 2, anytrue)
+      oneNA <- apply(oneNA, 2, anytrue)
+      allNA <- apply(allNA, 2, anytrue)
+      ##print(apply(rbind(notunique, oneNA, allNA), 2, anytrue))
+      notunique <- apply(rbind(notunique, oneNA, allNA), 2, anytrue)
       ##
       for (i in 1:(narms - 1)) {
         for (j in (i + 1):narms) {
@@ -820,7 +841,7 @@ pairwise <- function(treat,
           dat.j <- adddata[[j]]
           ##
           if (any(!notunique))
-            dat.ij <- dat.i[, names.adddata[!notunique]]
+            dat.ij <- dat.i[, names.adddata[!notunique], drop = FALSE]
           else
             stop("Study label must be unique for single treatment arm.")
           ##
@@ -869,7 +890,7 @@ pairwise <- function(treat,
       else
         sm <- gs("smbin")
       ##
-      sm <- meta:::setchar(sm, c("OR", "RD", "RR", "ASD"))
+      sm <- setchar(sm, c("OR", "RD", "RR", "ASD"))
       ##
       sparse <- switch(sm,
                        OR = (n.zeros > 0) | (n.all > 0),
@@ -1039,7 +1060,9 @@ pairwise <- function(treat,
           if (nrow(dat) > 0) {
             m1 <- metacont(dat$n1, dat$mean1, dat$sd1,
                            dat$n2, dat$mean2, dat$sd2,
-                           warn = warn, method.tau.ci = "", ...)
+                           warn = warn,
+                           method.tau.ci = "",
+                           method.smd = "Cohen", ...)
             ##
             dat$TE   <- m1$TE
             dat$seTE <- m1$seTE
@@ -1060,7 +1083,8 @@ pairwise <- function(treat,
           }
           else
             if (i == 1 & j == 2)
-              stop("No studies available for comparison of first and second treatment.",
+              stop("No studies available for comparison of ",
+                   "first and second treatment.",
                    call. = FALSE)
         }
       }
@@ -1161,7 +1185,8 @@ pairwise <- function(treat,
           }
           else
             if (i == 1 & j == 2)
-              stop("No studies available for comparison of first and second treatment.",
+              stop("No studies available for comparison of ",
+                   "first and second treatment.",
                    call. = FALSE)
         }
       }
@@ -1259,7 +1284,8 @@ pairwise <- function(treat,
           }
           else
             if (i == 1 & j == 2)
-              stop("No studies available for comparison of first and second treatment.",
+              stop("No studies available for comparison of ",
+                   "first and second treatment.",
                    call. = FALSE)
         }
       }
@@ -1328,6 +1354,31 @@ pairwise <- function(treat,
     }
     
     
+    ## Calculate standard error for SMDs
+    ##
+    if (type == "continuous" & m1$sm == "SMD") {
+      res$.seTE <- res$seTE
+      ##
+      for (i in unique(res$studlab)) {
+        sel.i <- res$studlab == i
+        dat.i <- res[sel.i, ]
+        ##
+        ## Calculate total sample size in study i
+        ##
+        ndat.i <- rbind(data.frame(treat = dat.i$treat1, n = dat.i$n1),
+                        data.frame(treat = dat.i$treat2, n = dat.i$n2))
+        n.i <- sum(ndat.i[!duplicated(ndat.i), ]$n)
+        ##
+        ## Crippa & Orsini (2016), BMC Med Res Meth, equation (5)
+        ##
+        varTE.i <-
+          1 / res$n1[sel.i] + 1 / res$n2[sel.i] + res$TE[sel.i]^2 / (2 * n.i)
+        ##
+        res$seTE[sel.i] <- sqrt(varTE.i)
+      }
+    }
+    
+    
     attr(res, "sm") <- m1$sm
     attr(res, "method") <- m1$method
     attr(res, "incr") <- incr
@@ -1357,10 +1408,22 @@ pairwise <- function(treat,
     rownames(res) <- 1:nrow(res)
   }
   
-  
+
+  ##
+  ## Use first treatment as reference if argument is missing
+  ##
+  labels <- unique(sort(c(res$treat1, res$treat2)))
+  ##
+  if (missing.reference.group)
+    reference.group <- labels[1]
+  if (is.numeric(reference.group))
+    chknumeric(reference.group, length = 1)
+  else
+    chkchar(reference.group, length = 1)
+  ##
   if (reference.group != "" | !keep.all.comparisons) {
     reference.group <-
-      meta:::setchar(reference.group, c(unique(c(res$treat1, res$treat2)), ""))
+      setchar(reference.group, c(labels, ""))
     ##
     drop <- logical(0)
     wo <- logical(0)
@@ -1412,12 +1475,10 @@ pairwise <- function(treat,
   }
   
   
+  attr(res, "pairwise") <- TRUE
   attr(res, "reference.group") <- reference.group
   attr(res, "keep.all.comparisons") <- keep.all.comparisons
   attr(res, "version") <- packageDescription("netmeta")$Version
-  ##
-  if (!inherits(res, "pairwise"))
-    class(res) <- c(class(res), "pairwise")
   
   
   res

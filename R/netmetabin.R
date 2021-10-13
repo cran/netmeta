@@ -45,12 +45,12 @@
 #'   \code{"OR"}).
 #' @param level The level used to calculate confidence intervals for
 #'   individual studies.
-#' @param level.comb The level used to calculate confidence intervals
-#'   for pooled estimates.
-#' @param comb.fixed A logical indicating whether a fixed effects
-#'   (common effects) network meta-analysis should be conducted.
-#' @param comb.random A logical indicating whether a random effects
-#'   network meta-analysis should be conducted.
+#' @param level.ma The level used to calculate confidence intervals
+#'   for network estimates.
+#' @param fixed A logical indicating whether a fixed effects / common
+#'   effects network meta-analysis should be conducted.
+#' @param random A logical indicating whether a random effects network
+#'   meta-analysis should be conducted.
 #' @param prediction A logical indicating whether a prediction
 #'   interval should be printed (only considered if \code{method =
 #'   "Inverse"}).
@@ -75,11 +75,15 @@
 #'   design (only considered if \code{method = "Inverse"}).
 #' @param tol.multiarm.se A numeric for the tolerance for consistency
 #'   of standard errors in multi-arm studies which are consistent by
-#'   design (only considered if \code{method = "Inverse"}).
+#'   design (only considered if the argument is not \code{NULL} and
+#'   \code{method = "Inverse"}).
 #' @param details.chkmultiarm A logical indicating whether treatment
 #'   estimates and / or variances of multi-arm studies with
 #'   inconsistent results or negative multi-arm variances should be
 #'   printed (only considered if \code{method = "Inverse"}).
+#' @param details.chkdata A logical indicating whether number of
+#'   events and participants of studies with inconsistent data should
+#'   be printed.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
 #' @param nchar.trts A numeric defining the minimum number of
@@ -95,6 +99,9 @@
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
 #'   standard errors).
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #' 
 #' @details
 #' This function implements three models for the network meta-analysis
@@ -137,15 +144,14 @@
 #' 
 #' For \code{method = "Inverse"}, both fixed effects and random
 #' effects models are calculated regardless of values choosen for
-#' arguments \code{comb.fixed} and \code{comb.random}. Accordingly,
-#' the network estimates for the random effects model can be extracted
-#' from component \code{TE.random} of an object of class
-#' \code{"netmeta"} even if argument \code{comb.random = FALSE}.
-#' However, all functions in R package \bold{netmeta} will adequately
-#' consider the values for \code{comb.fixed} and
-#' \code{comb.random}. E.g. function
+#' arguments \code{fixed} and \code{random}. Accordingly, the network
+#' estimates for the random effects model can be extracted from
+#' component \code{TE.random} of an object of class \code{"netmeta"}
+#' even if argument \code{random = FALSE}.  However, all functions in
+#' R package \bold{netmeta} will adequately consider the values for
+#' \code{fixed} and \code{random}. E.g. function
 #' \code{\link{print.summary.netmeta}} will not print results for the
-#' random effects model if \code{comb.random = FALSE}.
+#' random effects model if \code{random = FALSE}.
 #' 
 #' For the random-effects model, the direct treatment estimates are
 #' based on the common between-study variance \eqn{\tau^2} from the
@@ -268,17 +274,18 @@
 #'   observations in direct comparisons.}
 #' \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
 #'   in direct comparisons.}
-#' \item{sm, method, level, level.comb}{As defined above.}
+#' \item{sm, method, level, level.ma}{As defined above.}
 #' \item{incr, allincr, addincr, allstudies, cc.pooled}{As defined
 #'   above.}
-#' \item{comb.fixed, comb.random}{As defined above.}
+#' \item{fixed, random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
 #' \item{reference.group, baseline.reference, all.treatments}{As
 #'   defined above.}
 #' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
 #'   above.}
-#' \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
-#' \item{backtransf, title, warn}{As defined above.}
+#' \item{details.chkmultiarm, details.chkdata}{As defined above.}
+#' \item{sep.trts, nchar.trts}{As defined above.}
+#' \item{backtransf, title, warn, warn.deprecated}{As defined above.}
 #' \item{data}{Data set (in contrast-based format).}
 #' \item{data.design}{List with data in arm-based format (each list
 #'   element corresponds to a single design).}
@@ -376,10 +383,10 @@ netmetabin <- function(event1, n1, event2, n2,
                        allincr = gs("allincr"), addincr = gs("addincr"),
                        allstudies = gs("allstudies"),
                        level = gs("level"),
-                       level.comb = gs("level.comb"),
-                       comb.fixed = gs("comb.fixed"),
-                       comb.random = method == "Inverse" &
-                         (gs("comb.random") | !is.null(tau.preset)),
+                       level.ma = gs("level.ma"),
+                       fixed = gs("fixed"),
+                       random = method == "Inverse" &
+                         (gs("random") | !is.null(tau.preset)),
                        ##
                        prediction = FALSE,
                        level.predict = gs("level.predict"),
@@ -392,8 +399,9 @@ netmetabin <- function(event1, n1, event2, n2,
                        tau.preset = NULL,
                        ##
                        tol.multiarm = 0.001,
-                       tol.multiarm.se = tol.multiarm,
+                       tol.multiarm.se = NULL,
                        details.chkmultiarm = FALSE,
+                       details.chkdata = TRUE,
                        ##
                        sep.trts = ":",
                        nchar.trts = 666,
@@ -402,7 +410,8 @@ netmetabin <- function(event1, n1, event2, n2,
                        ##
                        title = "",
                        keepdata = gs("keepdata"),
-                       warn = TRUE) {
+                       warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                       ...) {
   
   
   ##
@@ -410,18 +419,11 @@ netmetabin <- function(event1, n1, event2, n2,
   ## (1) Check arguments
   ##
   ##
-  chkchar <- meta:::chkchar
-  chklevel <- meta:::chklevel
-  chklogical <- meta:::chklogical
-  chknull <- meta:::chknull
-  chknumeric <- meta:::chknumeric
-  setchar <- meta:::setchar
-  pvalQ <- meta:::pvalQ
-  ##
-  modtext <- paste0("must be equal to 'Inverse' (classic network meta-analysis), ",
-                    "'MH' (Mantel-Haenszel, the default) or ",
-                    "'NCH' (common-effects non-central hypergeometric).")
-  method <- meta:::setchar(method, c("Inverse", "MH", "NCH"), modtext)
+  modtext <-
+    paste0("must be equal to 'Inverse' (classic network meta-analysis), ",
+           "'MH' (Mantel-Haenszel, the default) or ",
+           "'NCH' (common-effects non-central hypergeometric).")
+  method <- setchar(method, c("Inverse", "MH", "NCH"), modtext)
   ##
   chklogical(allincr)
   chklogical(addincr)
@@ -429,25 +431,40 @@ netmetabin <- function(event1, n1, event2, n2,
   chklogical(cc.pooled)
   ##
   chklevel(level)
-  chklevel(level.comb)
   chklevel(level.predict)
   ##
-  chklogical(comb.fixed)
-  chklogical(comb.random)
   chklogical(prediction)
   ##
-  if (method != "Inverse" & !comb.fixed) {
-    warning("Argument 'comb.fixed' set to TRUE for Mantel-Haenszel ",
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  level.ma <- deprecated(level.ma, missing(level.ma), args, "level.comb",
+                         warn.deprecated)
+  chklevel(level.ma)
+  ##
+  missing.fixed <- missing(fixed)
+  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <-
+    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+  chklogical(random)
+  ##
+  if (method != "Inverse" & !fixed) {
+    warning("Argument 'fixed' set to TRUE for Mantel-Haenszel ",
             "method and non-central hypergeometric distribution.",
             call. = FALSE)
-    comb.fixed <- TRUE
+    fixed <- TRUE
   }
   ##
-  if (method != "Inverse" & comb.random) {
-    warning("Argument 'comb.random' set to FALSE for Mantel-Haenszel ",
+  if (method != "Inverse" & random) {
+    warning("Argument 'random' set to FALSE for Mantel-Haenszel ",
             "method and non-central hypergeometric distribution.",
             call. = FALSE)
-    comb.random <- FALSE
+    random <- FALSE
   }
   ##
   if (method != "Inverse" & prediction) {
@@ -466,8 +483,10 @@ netmetabin <- function(event1, n1, event2, n2,
     chknumeric(tau.preset, min = 0, length = 1)
   ##
   chknumeric(tol.multiarm, min = 0, length = 1)
-  chknumeric(tol.multiarm.se, min = 0, length = 1)
+  if (!is.null(tol.multiarm.se))
+    chknumeric(tol.multiarm.se, min = 0, length = 1)
   chklogical(details.chkmultiarm)
+  chklogical(details.chkdata)
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
@@ -488,8 +507,8 @@ netmetabin <- function(event1, n1, event2, n2,
       all.treatments <- FALSE
   ##
   chklogical(baseline.reference)
-
-
+  
+  
   ##
   ##
   ## (2) Read data
@@ -508,7 +527,7 @@ netmetabin <- function(event1, n1, event2, n2,
   event1 <- eval(mf[[match("event1", names(mf))]],
                  data, enclos = sys.frame(sys.parent()))
   ##
-  if (inherits(event1, "pairwise")) {
+  if (is.data.frame(event1) & !is.null(attr(event1, "pairwise"))) {
     is.pairwise <- TRUE
     ##
     if (missing(sm) & method == "Inverse")
@@ -731,10 +750,6 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ## Check for correct number of comparisons
   ##
-  is.wholenumber <-
-    function(x, tol = .Machine$double.eps^0.5)
-      abs(x - round(x)) < tol
-  ##
   tabnarms <- table(studlab)
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
@@ -801,26 +816,54 @@ netmetabin <- function(event1, n1, event2, n2,
   dat.wide <- dat.wide[order(dat.wide$studlab,
                              dat.wide$treat1, dat.wide$treat2), ]
   ##
-  get.designs <- function(x) {
-    ##
-    res <- nma.krahn(netmeta(pairwise(studlab = x$studlab,
-                                      treat = x$treat,
-                                      event = x$event,
-                                      n = x$n,
-                                      sm = "RD"),
-                             warn = FALSE)
-                     )$studies[, c("studlab", "design")]
-    ##
-    if (is.null(res)) {
-      net1 <- netmeta(pairwise(studlab = x$studlab,
-                               treat = x$treat,
-                               event = x$event,
-                               n = x$n,
-                               sm = "RD"),
-                      warn = FALSE)
-      ##
-      res <- data.frame(studlab = net1$studlab, design = net1$designs)
+  ## Check for correct number of treatments
+  ##
+  d.long <- unique(dat.long[, c("studlab", "treat", "event", "n")])
+  d.long <- d.long[order(d.long$studlab, d.long$treat), , drop = FALSE]
+  ##
+  tabnarms <- table(d.long$studlab, d.long$treat)
+  larger.one <- function(x) any(x > 1)
+  sel.study <- apply(tabnarms, 1, larger.one)
+  ##
+  if (sum(sel.study) == 1) {
+    if (details.chkdata) {
+      cat("Inconsistent number of events and participants:\n")
+      d.l <- d.long[d.long$studlab == rownames(tabnarms)[sel.study], ]
+      prmatrix(d.l,
+               quote = FALSE, right = TRUE,
+               rowlab = rep("", nrow(d.l)))
     }
+    stop(paste0("Study '", rownames(tabnarms)[sel.study],
+                "' has inconsistent data. Please check the original data."),
+         call. = FALSE)
+  }
+  if (sum(sel.study) > 1) {
+    if (details.chkdata) {
+      cat("Inconsistent number of events and participants:\n")
+      d.l <- d.long[d.long$studlab %in% rownames(tabnarms)[sel.study], ]
+      prmatrix(d.l,
+               quote = FALSE, right = TRUE,
+               rowlab = rep("", nrow(d.l)))
+    }
+    ##
+    stop(paste0("The following studies have inconsistent data: ",
+                paste(paste0("'", rownames(tabnarms)[sel.study], "'"),
+                      collapse = " - "),
+                "\n  Please check the original data."),
+         call. = FALSE)
+  }
+  ##
+  get.designs <- function(x) {
+    net1 <-
+      netmeta(pairwise(studlab = x$studlab, treat = x$treat,
+                       event = x$event, n = x$n,
+                       sm = "RD"),
+              warn = FALSE)
+    ##
+    if (net1$n == 2)
+      res <- data.frame(studlab = net1$studlab, design = net1$designs)
+    else
+      res <- nma.krahn(net1)$studies[, c("studlab", "design")]
     ##
     res$design <- as.character(res$design)
     res <- unique(res)
@@ -1170,6 +1213,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   TE.fixed <- seTE.fixed <- NAmatrix
   TE.direct.fixed <- seTE.direct.fixed <- NAmatrix
+  Q.direct <- tau2.direct <- I2.direct <- NAmatrix
   
   
   ##
@@ -1205,8 +1249,8 @@ netmetabin <- function(event1, n1, event2, n2,
                    allstudies = allstudies.iv)
   ##
   net.iv <- netmeta(p.iv,
-                    level = level, level.comb = level.comb,
-                    comb.fixed = comb.fixed, comb.random = comb.random,
+                    level = level, level.ma = level.ma,
+                    fixed = fixed, random = random,
                     prediction = prediction, level.predict = level.predict,
                     reference.group = reference.group,
                     baseline.reference = baseline.reference,
@@ -1709,7 +1753,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ## Confidence intervals
   ##
-  ci.f <- ci(TE.fixed, seTE.fixed, level = level.comb)
+  ci.f <- ci(TE.fixed, seTE.fixed, level = level.ma)
   ##
   ## Inconsistency global
   ##
@@ -1741,23 +1785,33 @@ netmetabin <- function(event1, n1, event2, n2,
     selstud <- treat1 == sel.treat1 & treat2 == sel.treat2
     ##
     m.i <- metabin(event1, n1, event2, n2, subset = selstud,
-                   sm = "OR",
+                   method = "MH", sm = "OR",
                    incr = incr, allincr = allincr, addincr = addincr,
-                   allstudies = allstudies, MH.exact = !cc.pooled)
+                   allstudies = allstudies, MH.exact = !cc.pooled,
+                   Q.Cochrane = FALSE)
     ##
     TE.i   <- m.i$TE.fixed
     seTE.i <- m.i$seTE.fixed
+    Q.i <- m.i$Q
+    tau2.i <- m.i$tau2
+    I2.i <- m.i$I2
     ##
     TE.direct.fixed[sel.treat1, sel.treat2]   <- TE.i
     seTE.direct.fixed[sel.treat1, sel.treat2] <- seTE.i
+    Q.direct[sel.treat1, sel.treat2] <- Q.i
+    tau2.direct[sel.treat1, sel.treat2] <- tau2.i
+    I2.direct[sel.treat1, sel.treat2] <- I2.i
     ##
     TE.direct.fixed[sel.treat2, sel.treat1]   <- -TE.i
     seTE.direct.fixed[sel.treat2, sel.treat1] <- seTE.i
+    Q.direct[sel.treat2, sel.treat1] <- Q.i
+    tau2.direct[sel.treat2, sel.treat1] <- tau2.i
+    I2.direct[sel.treat2, sel.treat1] <- I2.i
   }
   ##
   rm(sel.treat1, sel.treat2, selstud, m.i, TE.i, seTE.i)
   ##
-  ci.d <- ci(TE.direct.fixed, seTE.direct.fixed, level = level.comb)
+  ci.d <- ci(TE.direct.fixed, seTE.direct.fixed, level = level.ma)
   
   
   labels <- sort(unique(c(treat1, treat2)))
@@ -1778,6 +1832,8 @@ netmetabin <- function(event1, n1, event2, n2,
               TE = data$.TE[!data$.drop],
               seTE = data$.seTE[!data$.drop],
               seTE.adj = rep(NA, sum(!data$.drop)),
+              seTE.adj.fixed = rep(NA, sum(!data$.drop)),
+              seTE.adj.random = rep(NA, sum(!data$.drop)),
               ##
               design = designs(treat1, treat2, studlab)$design,
               ##
@@ -1836,6 +1892,11 @@ netmetabin <- function(event1, n1, event2, n2,
               statistic.direct.random = NAmatrix,
               pval.direct.random = NAmatrix,
               ##
+              Q.direct = Q.direct,
+              tau.direct = sqrt(tau2.direct),
+              tau2.direct = tau2.direct,
+              I2.direct = I2.direct,
+              ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
               lower.indirect.fixed = NA,
@@ -1887,9 +1948,9 @@ netmetabin <- function(event1, n1, event2, n2,
               cc.pooled = cc.pooled,
               ##
               level = level,
-              level.comb = level.comb,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              level.ma = level.ma,
+              fixed = fixed,
+              random = random,
               ##
               prediction = prediction,
               level.predict = level.predict,
@@ -1904,6 +1965,7 @@ netmetabin <- function(event1, n1, event2, n2,
               tol.multiarm = tol.multiarm,
               tol.multiarm.se = tol.multiarm.se,
               details.chkmultiarm = details.chkmultiarm,
+              details.chkdata = details.chkdata,
               ##
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,

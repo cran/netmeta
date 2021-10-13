@@ -1,6 +1,6 @@
 nma.additive <- function(TE, weights, studlab,
                          treat1, treat2,
-                         level.comb,
+                         level,
                          X, C.matrix, B.matrix,
                          Q, df.Q.additive, df.Q.diff,
                          n, sep.trts) {
@@ -44,11 +44,11 @@ nma.additive <- function(TE, weights, studlab,
   delta <- as.vector(X %*% beta) # = B.matrix %*% theta = H %*% TE
   se.delta <- unname(sqrt(diag(X %*% Lplus %*% t(X))))
   ##
-  ## delta.all = all direct and indirect treatment estimates
+  ## delta.all(.matrix) = all direct and indirect treatment estimates
   ##
   B.full <- createB(ncol = n)
-  X.full <- B.full %*% C.matrix
-  colnames(X.full) <- colnames(C.matrix)
+  X.all <- B.full %*% C.matrix
+  colnames(X.all) <- colnames(C.matrix)
   ##
   labels <- colnames(B.matrix)
   ##
@@ -62,37 +62,39 @@ nma.additive <- function(TE, weights, studlab,
     }
   }
   ##
-  rownames(X.full) <- lab
+  rownames(X.all) <- lab
   ##
-  delta.full <- as.vector(X.full %*% beta)
-  se.delta.full <- sqrt(diag(X.full %*% Lplus %*% t(X.full)))
-  names(delta.full) <- names(se.delta.full)
+  delta.all <- as.vector(X.all %*% beta)
+  se.delta.all <- sqrt(diag(X.all %*% Lplus %*% t(X.all)))
+  names(delta.all) <- names(se.delta.all)
   ##
-  delta.all <- se.delta.all <- matrix(0, ncol = n, nrow = n)
+  delta.all.matrix <- se.delta.all.matrix <- matrix(0, ncol = n, nrow = n)
   ##
   k <- 0
   ##
   for (i in 1:(n - 1)) {
     for (j in (i + 1):n) {
       k <- k + 1
-      delta.all[i, j] <-  delta.full[k]
-      delta.all[j, i] <- -delta.full[k]
-      se.delta.all[i, j] <- se.delta.all[j, i] <- se.delta.full[k]
+      delta.all.matrix[i, j] <-  delta.all[k]
+      delta.all.matrix[j, i] <- -delta.all[k]
+      se.delta.all.matrix[i, j] <-
+        se.delta.all.matrix[j, i] <- se.delta.all[k]
     }
   }
   ##
-  colnames(delta.all) <- rownames(delta.all) <-
-    colnames(se.delta.all) <- rownames(se.delta.all) <- labels
+  colnames(delta.all.matrix) <- rownames(delta.all.matrix) <-
+    colnames(se.delta.all.matrix) <- rownames(se.delta.all.matrix) <- labels
   
   
   comparisons <- c(list(studlab = studlab, treat1 = treat1, treat2 = treat2),
-                   ci(delta, se.delta, level = level.comb))
+                   ci(delta, se.delta, level = level))
   ##
-  all.comparisons <- ci(delta.all, se.delta.all, level = level.comb)
+  all.comparisons <- ci(delta.all.matrix, se.delta.all.matrix,
+                        level = level)
   ##
-  components <- meta::ci(beta, se.beta, level = level.comb)
+  components <- meta::ci(beta, se.beta, level = level)
   ##
-  combinations <- meta::ci(theta, se.theta, level = level.comb)
+  combinations <- meta::ci(theta, se.theta, level = level)
   ##
   ## Test of total heterogeneity / inconsistency:
   ##
@@ -134,7 +136,7 @@ nma.additive <- function(TE, weights, studlab,
                    sum(diag((I - H) %*%
                             (B.matrix %*% t(B.matrix) * E / 2) %*% W)))
     tau <- sqrt(tau2)
-    ci.I2 <- meta:::isquared(Q.additive, df.Q.additive, level.comb)
+    ci.I2 <- isquared(Q.additive, df.Q.additive, level)
     I2 <- ci.I2$TE
     lower.I2 <- ci.I2$lower
     upper.I2 <- ci.I2$upper
@@ -155,7 +157,12 @@ nma.additive <- function(TE, weights, studlab,
               pval.Q.diff = pval.Q.diff,
               ##
               tau = tau,
-              I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2)
+              I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2,
+              ##
+              L.matrix = L,
+              Lplus.matrix = Lplus,
+              H.matrix = H
+              )
   
   
   res

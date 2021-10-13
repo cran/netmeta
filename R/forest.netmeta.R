@@ -3,6 +3,8 @@
 #' @description
 #' Draws a forest plot in the active graphics window (using grid
 #' graphics system).
+#'
+#' @aliases forest.netmeta plot.netmeta
 #' 
 #' @param x An object of class \code{netmeta}.
 #' @param pooled A character string indicating whether results for the
@@ -41,9 +43,8 @@
 #' @param smlab A label printed at top of figure. By default, text
 #'   indicating either fixed effect or random effects model is
 #'   printed.
-#' @param sortvar An optional vector used to sort the individual
-#'   studies (must be of same length as the total number of
-#'   treatments).
+#' @param sortvar An optional vector used to sort treatments (must be
+#'   of same length as the total number of treatments).
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in forest plots. If \code{backtransf = TRUE},
 #'   results for \code{sm = "OR"} are presented as odds ratios rather
@@ -135,7 +136,7 @@
 #' # Random effects effect model
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD", comb.fixed = FALSE)
+#'                 data = Senn2013, sm = "MD", fixed = FALSE)
 #' 
 #' forest(net2, xlim = c(-1.5, 1), ref = "plac",
 #'        xlab = "HbA1c difference")
@@ -177,11 +178,10 @@
 #' 
 #' @method forest netmeta
 #' @export
-#' @export forest.netmeta
 
 
 forest.netmeta <- function(x,
-                           pooled = ifelse(x$comb.random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "fixed"),
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
                            labels = x$trts,
@@ -212,26 +212,23 @@ forest.netmeta <- function(x,
   ## (1) Check and set arguments
   ##
   ##
-  meta:::chkclass(x, "netmeta")
-  x <- upgradenetmeta(x)
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   ##
   is.bin <- inherits(x, "netmetabin")
   ##
-  chklogical <- meta:::chklogical
-  formatN <- meta:::formatN
-  ##
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("fixed", "random"))
   ##
   chklogical(equal.size)
   ##
-  meta:::chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits, min = 0, length = 1)
   ##
   if (is.null(small.values))
     small.values <- "good"
   else
-    small.values <- meta:::setchar(small.values, c("good", "bad"))
-  meta:::chknumeric(nsim, min = 1, length = 1)
-  meta:::chknumeric(digits.prop, min = 0, length = 1)
+    small.values <- setchar(small.values, c("good", "bad"))
+  chknumeric(nsim, min = 1, length = 1)
+  chknumeric(digits.prop, min = 0, length = 1)
   ##
   chklogical(baseline.reference)
   ##
@@ -257,7 +254,7 @@ forest.netmeta <- function(x,
   chklogical(print.byvar)
   ##
   chklogical(backtransf)
-  meta:::chkchar(lab.NA)
+  chkchar(lab.NA)
   ##
   stdlabs <- c("event.e", "n.e", "event.c", "n.c",
                "mean.e", "sd.e", "mean.c", "sd.c",
@@ -289,9 +286,9 @@ forest.netmeta <- function(x,
   }
   ##
   for (i in names(list(...))) {
-    if (!is.null(meta:::setchar(i, "weight.study", stop = FALSE)))
+    if (!is.null(setchar(i, "weight.study", stop.at.error = FALSE)))
       stop("Argument 'weight.study' set internally.", call. = TRUE)
-    if (!is.null(meta:::setchar(i, "prediction", stop = FALSE)))
+    if (!is.null(setchar(i, "prediction", stop.at.error = FALSE)))
       stop("For prediction intervals see example in help file of ",
            "forest.netsplit().", call. = TRUE)
   }
@@ -316,21 +313,14 @@ forest.netmeta <- function(x,
     anyCol(rightcols, "SUCRA") || anyCol(leftcols, "SUCRA") ||
     any(matchVar(sortvar.c, "SUCRA")) || any(matchVar(sortvar.c, "-SUCRA"))
   ##
-  if (one.rg) {
-    if (reference.group == "") {
-      warning("First treatment used as reference as argument ",
-              "'reference.group' is unspecified.",
-              call. = FALSE)
-      reference.group <- trts[1]
-    }
-    else {
-      try.ref <- try(reference.group <- setref(reference.group, trts))
-      
-    }
+  if (one.rg && reference.group == "") {
+    warning("First treatment used as reference as argument ",
+            "'reference.group' is unspecified.",
+            call. = FALSE)
+    reference.group <- trts[1]
   }
-  else
-    for (i in seq_along(reference.group))
-      reference.group[i] <- setref(reference.group[i], trts)
+  ##
+  reference.group <- setref(reference.group, trts, length = 0)
   ##
   if (pooled == "fixed") {
     TE   <- x$TE.fixed
@@ -342,8 +332,8 @@ forest.netmeta <- function(x,
       Pscore <- netrank(x, small.values = small.values,
                         method = "P-score")$ranking.fixed
     if (calcSUCRA) {
-      x$comb.fixed <- TRUE
-      x$comb.random <- FALSE
+      x$fixed <- TRUE
+      x$random <- FALSE
       SUCRA <- netrank(x, small.values = small.values,
                        method = "SUCRA", nsim = nsim)$ranking.fixed
     }
@@ -367,8 +357,8 @@ forest.netmeta <- function(x,
       Pscore <- netrank(x, small.values = small.values,
                         method = "P-score")$ranking.random
     if (calcSUCRA) {
-      x$comb.fixed <- FALSE
-      x$comb.random <- TRUE
+      x$fixed <- FALSE
+      x$random <- TRUE
       SUCRA <- netrank(x, small.values = small.values,
                        method = "SUCRA", nsim = nsim)$ranking.random
     }
@@ -567,8 +557,8 @@ forest.netmeta <- function(x,
   ##
   forest(m1,
          digits = digits,
-         comb.fixed = FALSE, comb.random = FALSE,
-         hetstat = FALSE,
+         overall = FALSE, fixed = FALSE, random = FALSE,
+         hetstat = FALSE, test.subgroup = FALSE,
          leftcols = leftcols,
          leftlabs = leftlabs,
          rightcols = rightcols,
@@ -592,3 +582,15 @@ forest.netmeta <- function(x,
   ##
   invisible(dat.out)
 }
+
+
+
+
+
+#' @rdname forest.netmeta
+#' @method plot netmeta
+#' @export
+#'
+
+plot.netmeta <- function(x, ...)
+  forest(x, ...)
