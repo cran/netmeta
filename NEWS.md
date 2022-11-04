@@ -1,3 +1,58 @@
+## netmeta, version 2.6-0 (2022-11-04)
+
+### Major changes
+
+* New general layout of network graphs:
+  - same general layout irrespective whether '3-D look' is used or not
+    (argument 'plastic')
+  - thickness of lines / edges proportional to the number of studies
+    directly comparing treatments
+  - more similar thickness of lines if proportional to the number of
+    studies directly comparing treatments by using sqrt() to rescale
+    lines
+  - more similar point sizes if proportional to the number of
+    observations in treatment arms by using sqrt() to rescale point
+    sizes
+
+### Bug fixes
+
+* rankogram():
+  - for backward compatibility, export list elements 'fixed',
+    'ranking.fixed', 'ranking.matrix.fixed', and
+    'cumrank.matrix.fixed'
+
+### User-visible changes
+
+* netgraph.netmeta():
+  - thickness of lines / edges proportional to the number of studies
+    directly comparing treatments (previous default: proportional to
+    standard error of direct pairwise comparisons in common effects or
+    random effects model if 'plastic = TRUE' and equal thickness if
+    'plastic = FALSE')
+  - print black lines if 'plastic = FALSE' (previous default:
+    slateblue lines)
+  - print slateblue lines if 'iterate = TRUE'
+  - new argument 'rescale.thickness' to specify function to rescale
+    line thickness
+  - new argument 'rescale.pointsize' to specify function to rescale
+    point sizes
+  - new argument 'points.max' to define maximum point size
+  - new argument 'points.min' to define minimal point size
+
+* netgraph.netimpact():
+  - print black lines if 'plastic = FALSE' (previous default:
+    slateblue lines)
+
+* netgraph.netconnection():
+  - argument 'iterate' can be used (was hard-coded as FALSE)
+
+* netgraph.discomb(), netgraph.netimpact():
+  - new argument 'plastic'
+
+* plot.rankogram():
+  - do not print gray background
+
+
 ## netmeta, version 2.5-0 (2022-07-11)
 
 ### Major changes

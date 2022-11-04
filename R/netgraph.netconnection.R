@@ -27,10 +27,6 @@
 #' \code{col} defines the color for the subnetwork with the reference
 #' treatment.
 #' 
-#' The following arguments for network graphs are used internally and
-#' cannot be specified by the user: \code{thickness}, \code{seq},
-#' \code{iterate}.
-#' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de},
 #'   Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}
 #' 
@@ -47,7 +43,9 @@
 #' nc1 <- netconnection(t1, t2)
 #' print(nc1, details = TRUE)
 #' 
-#' netgraph(nc1, plastic = TRUE)
+#' netgraph(nc1, points = TRUE, adj = 0.5, bg.points = "lightgray")
+#' netgraph(nc1, points = TRUE, adj = 0.5, bg.points = "lightgray",
+#'   plastic = TRUE)
 #' 
 #' @method netgraph netconnection
 #' @export
@@ -128,8 +126,7 @@ netgraph.netconnection <- function(x, seq,
   
   
   res <- netgraph(x, plastic = plastic, col = col,
-                  thickness = "equal", seq = seq, iterate = FALSE,
-                  ...)
+                  seq = seq, ...)
 
   
   invisible(res)
