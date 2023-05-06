@@ -1,7 +1,7 @@
 94d55d512a9ba36caa9b7df079bae19f *COPYING
-376cbbc9d64b80fb72d72418a6f8626e *DESCRIPTION
+716fb84070d2731a91be8443fb439314 *DESCRIPTION
 0369e83039da394dfa47ad3d3a4fe9da *NAMESPACE
-b9a7159db1076a0d510a76e8d4b7f087 *NEWS.md
+261db35296e871dc97ce1cb3452f6013 *NEWS.md
 249f9c73310f9307285ece90dd6d5d36 *R/Baker2009.R
 4c602505b1b1fa3b79e570f1f5bdc91b *R/Dogliotti2014.R
 2fb6091bee5b64662a0d07b94ea73d19 *R/Dong2013.R
@@ -52,7 +52,7 @@ f6c0c6a9b50bb6c0ae3b2955daf7580f *R/mat2dat.split.R
 424d9656cf9a03e82a08f45ea310dc55 *R/matitle.R
 c63c6e428ff90a46fb4d3bf2ab9aac48 *R/meta-aux.R
 14c41abda79239728a296176e3e5ad15 *R/meta-chk.R
-d42269ce446d170bc8107a65aff36881 *R/meta-format.R
+7b92e5e6607175b594fab1d87e36a595 *R/meta-format.R
 15a877e0c77b699e62ae108b96b4b8c8 *R/meta-het.R
 d7c960a2dde818dabf688d75971d68d4 *R/meta-is.R
 38cd1a5dec366245b38454d93604065e *R/meta-set.R
@@ -72,7 +72,7 @@ bb1490d3b8c7bea7772b8fbb7b64b61f *R/netdistance.R
 d85dee5aa8ee0a54e1557033024f81c9 *R/netgraph.netcomb.R
 0b9c3ef72ff0f0c8f6fd89e600a4b87b *R/netgraph.netconnection.R
 365d59f113e8a0eabce1b36bc7d5bd9f *R/netgraph.netimpact.R
-589503a5a7d11ca0358170eb719068fb *R/netgraph.netmeta.R
+7d8566e618908cc9227674d94e3b1b98 *R/netgraph.netmeta.R
 79247bacc196bf60c96b7e8023df455c *R/netheat-internal.R
 9c7965e91e2f03edf5debcc9d0af5c3a *R/netheat.R
 8326458e1139a9d09e33247b72f1357f *R/netimpact.R
@@ -122,6 +122,7 @@ fcc50d164c3166e7e3a5c5f12a6e585f *R/summary.netcomb.R
 40ea1b448f7693e95c5ebf7d7b71f839 *R/treats.R
 7fd269ecb11eac1a46fa143476f4a2ef *R/updateversion.R
 a48e9f14903fd6dcf08197753ef1a8a2 *R/uppertri.R
+2bbf06e21043447f2eaf03644e3770c3 *build/vignette.rds
 9c7d60b8053fdc53c8f9112948540401 *data/Baker2009.rda
 419e04ac95b49a294f9ee4a644bfc0fd *data/Dogliotti2014.rda
 7fb05dc167e4cd946599f0a3cc5e6179 *data/Dong2013.rda
@@ -136,6 +137,8 @@ b2c1202322dbd39892f0922636220f92 *data/Woods2010.rda
 086ebae6a143025efeb3681456af42ca *data/parkinson.rda
 49172d65aaa27adb2e5e9c08588da664 *data/smokingcessation.rda
 da59d9a400342eac3df283e2512e685a *inst/CITATION
+578b5b8f430f77ec58251b9c614632d1 *inst/doc/netmeta.pdf
+7ae757cb0253cd4d04157e37f7c8d0da *inst/doc/netmeta.pdf.asis
 9eb03a9b6b5b51db56f9c26d743be61b *man/Baker2009.Rd
 25c61f6c6898c8901358234bc1b9e855 *man/Dogliotti2014.Rd
 a041215610ba5608529a2ee053fb6101 *man/Dong2013.Rd
@@ -207,3 +210,4 @@ aadf0df694ee855bacb3793a02aebb21 *man/smokingcessation.Rd
 d7b49b4fa88681cd433ecaf6c47b0eaa *man/summary.netcomb.Rd
 d3be566b9c0932465b0d831b40b4a49d *man/summary.netmeta.Rd
 859ae72f7a7782630d09699ce22a0956 *man/treats.Rd
+7ae757cb0253cd4d04157e37f7c8d0da *vignettes/netmeta.pdf.asis
