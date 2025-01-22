@@ -117,7 +117,7 @@
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netrank}},
 #'   \code{\link{plot.netrank}}, \code{\link{hasse}},
-#'   \code{\link{plot.netposet}}
+#'   \code{\link{plot.netposet}}, \code{\link[metadat]{dat.linde2015}}
 #' 
 #' @references
 #' Carlsen L, Bruggemann R (2014):
@@ -145,11 +145,7 @@
 #' 
 #' @examples
 #' \dontrun{
-#' # Use depression dataset
-#' #
-#' data(Linde2015)
-#' 
-#' # Define order of treatments
+#' # Define order of treatments in depression dataset linde2015
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
 #'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -162,7 +158,7 @@
 #' #
 #' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "undesirable")
@@ -171,7 +167,7 @@
 #' #
 #' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "undesirable")
@@ -182,7 +178,8 @@
 #' 
 #' # Hasse diagram
 #' #
-#' hasse(po)
+#' if (requireNamespace("hasseDiagram", quietly = TRUE))
+#'   hasse(po)
 #'
 #' 
 #' #
@@ -196,7 +193,7 @@
 #' #
 #' p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net3 <- netmeta(p3, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "desirable")
@@ -205,7 +202,7 @@
 #' #
 #' p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
-#'   studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
+#'   studlab = id, data = subset(dat.linde2015, id != 55), sm = "OR")
 #' #
 #' net4 <- netmeta(p4, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "desirable")
@@ -214,7 +211,7 @@
 #' #
 #' p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net5 <- netmeta(p5, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "desirable")
@@ -237,13 +234,15 @@
 #' 
 #' # Hasse diagram for all outcomes (random effects model)
 #' #
-#' hasse(po.ranks)
+#' if (requireNamespace("hasseDiagram", quietly = TRUE))
+#'   hasse(po.ranks)
 #' 
 #' # Hasse diagram for outcomes early response and early remission
 #' #
 #' po12 <- netposet(netrank(net1), netrank(net2),
 #'   outcomes = outcomes[1:2])
-#' hasse(po12)
+#' if (requireNamespace("hasseDiagram", quietly = TRUE))
+#'   hasse(po12)
 #' 
 #' # Scatter plot
 #' #
@@ -280,8 +279,10 @@
 #' po
 #' po12
 #' #
-#' hasse(po)
-#' hasse(po12)
+#' if (requireNamespace("hasseDiagram", quietly = TRUE)) {
+#'   hasse(po)
+#'   hasse(po12)
+#' }
 #' #
 #' oldpar <- par(pty = "s")
 #' plot(po12)
@@ -289,7 +290,6 @@
 #' 
 #' @rdname netposet
 #' @export netposet
-
 
 netposet <- function(..., outcomes, treatments, small.values,
                      common, random, fixed, comb.fixed, comb.random) {
@@ -514,18 +514,16 @@ netposet <- function(..., outcomes, treatments, small.values,
       if (any(ranking.treatments[[i]] != treatments)) {
         if (all(sort(ranking.treatments[[i]]) == sort(treatments)))
           stop("Different order of treatments provided:\n ",
-               paste(paste("'", treatments, "'", sep = ""),
-                     collapse = " - "),
+               paste(paste0("'", treatments, "'"), collapse = " - "),
                "\n ",
-               paste(paste("'", ranking.treatments[[i]], "'", sep = ""),
+               paste(paste0("'", ranking.treatments[[i]], "'"),
                      collapse = " - "),
                call. = FALSE)
         else
           stop("Different treatments provided:\n ",
-               paste(paste("'", treatments, "'", sep = ""),
-                     collapse = " - "),
+               paste(paste0("'", treatments, "'"), collapse = " - "),
                "\n ",
-               paste(paste("'", ranking.treatments[[i]], "'", sep = ""),
+               paste(paste0("'", ranking.treatments[[i]], "'"),
                      collapse = " - "),
                call. = FALSE)
       }
@@ -657,13 +655,9 @@ netposet <- function(..., outcomes, treatments, small.values,
 }
 
 
-
-
-
 #' @rdname netposet
 #' @method print netposet
 #' @export
-
 
 print.netposet <- function(x,
                            pooled = ifelse(x$random, "random", "common"),

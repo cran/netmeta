@@ -4,7 +4,8 @@
 #' This function generates the contribution of direct comparisons to
 #' every network treatment comparison. The output is a matrix where
 #' rows represent network treatment effects and columns represent the
-#' contribution of direct treatment effects.
+#' contribution of direct treatment effects. R package \bold{igraph} must be
+#' available in order to run this function.
 #' 
 #' @aliases netcontrib print.netcontrib
 #' 
@@ -41,12 +42,13 @@
 #' meta-analysis.
 #' 
 #' We use ideas from graph theory to derive the proportion that is
-#' contributed by each direct treatment effect. We start with the
-#' 'projection' matrix in a two-step network meta-analysis model,
+#' contributed by each direct treatment effect. Accordingly, R package
+#' \bold{igraph} must be available in order to run this function. We start
+#' with the 'projection' matrix in a two-step network meta-analysis model,
 #' called the H matrix, which is analogous to the hat matrix in a
 #' linear regression model. H entries are translated to proportion
 #' contributions based on the observation that the rows of H can be
-#' interpreted as flow networks.  A stream is defined as the
+#' interpreted as flow networks. A stream is defined as the
 #' composition of a path and its associated flow (Papakonstantinou et
 #' al., 2018).
 #'
@@ -92,12 +94,12 @@
 #' not recommended.
 #'
 #' (3) If argument \code{method = "cccp"}, contributions are estimated
-#' using \code{\link[cccp]{l1}} from R package \bold{cccp} (Rücker et
-#' al., 2023, unpublished).
+#' using \code{\link[cccp]{l1}} from R package \bold{cccp} which must be
+#' available (Rücker et al., 2024).
 #'
 #' (4) If argument \code{method = "pseudoinverse"}, contributions are
 #' derived from an L2 solution based on a Moore-Penrose pseudoinverse
-#' (Rücker et al., 2023, unpublished).
+#' (Rücker et al., 2024).
 #' 
 #' Once the streams have been identified by any method, the proportion
 #' contribution of each direct comparison is equal to the sum over the
@@ -140,7 +142,7 @@
 #' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Annabel
 #'   Davies \email{annabel.davies@@manchester.ac.uk}
 #' 
-#' @seealso \code{\link{netmeta}}
+#' @seealso \code{\link{netmeta}}, \code{\link[metadat]{dat.woods2010}}
 #' 
 #' @references
 #' Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
@@ -149,30 +151,37 @@
 #' \emph{Statistics in Medicine},
 #' \bold{41}, 2091--2114
 #' 
-#' Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
-#' Schwarzer, G., Egger, M., Salanti, G. (2018):
+#' Papakonstantinou T, Nikolakopoulou A, Rücker G, Chaimani A, Schwarzer G,
+#' Egger M, Salanti G (2018):
 #' Estimating the contribution of studies in network meta-analysis:
 #' paths, flows and streams.
 #' \emph{F1000Research}
 #' 
+#' Rücker G, Papakonstantinou T, Nikolakopoulou A, Schwarzer G, Galla T,
+#' Davies AL (2024):
+#' Shortest path or random walks? A framework for path weights in network
+#' meta-analysis.
+#' \emph{Statistics in Medicine}.
+#' 
 #' @keywords contribution
 #' 
 #' @examples
-#' # Use the Woods dataset
-#' #
-#' data("Woods2010")
-#' p1 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = Woods2010, sm = "OR")
+#' if (requireNamespace("igraph", quietly = TRUE)) {
+#'   # Use the Woods dataset
+#'   #
+#'   p1 <- pairwise(treatment, event = r, n = N,
+#'     studlab = author, data = dat.woods2010, sm = "OR")
 #' 
-#' net1 <- netmeta(p1)
-#' cm <- netcontrib(net1)
-#' cm
+#'   net1 <- netmeta(p1)
+#'   #
+#'   cm <- netcontrib(net1)
+#'   cm
 #'
 #' netcontrib(net1, method = "r")
+#' }
 #' 
 #' @rdname netcontrib
 #' @export netcontrib
-
 
 netcontrib <- function(x,
                        method = "shortestpath",
@@ -192,7 +201,7 @@ netcontrib <- function(x,
   chkclass(x, "netmeta")
   x <- updateversion(x)
   ##
-  is.installed.package("igraph")
+  is_installed_package("igraph")
   
   
   ##
@@ -210,7 +219,7 @@ netcontrib <- function(x,
   }
   ##
   if (method == "cccp")
-    is.installed.package("cccp")
+    is_installed_package("cccp")
   
   chknumeric(nchar.trts, min = 1, length = 1)
   chklogical(verbose)
@@ -269,22 +278,18 @@ netcontrib <- function(x,
 }
 
 
-
-
-
 #' @rdname netcontrib
 #' 
 #' @method print netcontrib
 #' 
 #' @export
 
-
 print.netcontrib <- function(x,
                              common = x$x$common,
                              random = x$x$random,
                              digits = 4,
                              nchar.trts = x$nchar.trts,
-                             legend = TRUE,
+                             legend = gs("legend"),
                              warn.deprecated = gs("warn.deprecated"),
                              ...) {
   
@@ -294,6 +299,8 @@ print.netcontrib <- function(x,
   ##
   ##
   chkclass(x, "netcontrib")
+  chksuitable(x, "Network contributions",
+              classes = c("netmeta.crossnma", "netmeta.multinma"))
   x <- updateversion(x)
   
   
@@ -329,24 +336,25 @@ print.netcontrib <- function(x,
   ##
   matitle(x$x)
   ##
-  cat(paste0("Contribution matrix (",
-             if (is.null(x$method) | x$method == "shortestpath")
-               "Papakonstantinou et al., 2018, F1000Research"
-             else if (x$method == "randomwalk")
-               "Davies et al., 2022, Stat Med"
-             else if (x$method == "cccp")
-               paste0("Ruecker et al., 2023, ",
-                      "L1 solution based on R package cccp")
-             else if (x$method == "pseudoinverse")
-               paste0("Ruecker et al., 2023, ",
-                      "L2 solution based on Moore-Penrose pseudoinverse")
-             else
-               "unknown method",
-             ")"))
+  cat("Contribution matrix (",
+      if (is.null(x$method) | x$method == "shortestpath")
+        "Papakonstantinou et al., 2018, F1000Research"
+      else if (x$method == "randomwalk")
+        "Davies et al., 2022, Stat Med"
+      else if (x$method == "cccp")
+        paste0("Ruecker et al., 2023, ",
+               "L1 solution based on R package cccp")
+      else if (x$method == "pseudoinverse")
+        paste0("Ruecker et al., 2023, ",
+               "L2 solution based on Moore-Penrose pseudoinverse")
+      else
+        "unknown method",
+      ")",
+      sep = "")
   ##
   if ((is.null(x$method) | x$method == "shortestpath") & x$hatmatrix.F1000)
-    cat(paste(",\nhat matrix does not take correlation of",
-              "multi-arm studies into account"))
+    cat(",\nhat matrix does not take correlation of",
+        "multi-arm studies into account")
   ##
   cat("\n\n")
   

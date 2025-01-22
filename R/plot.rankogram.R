@@ -24,9 +24,11 @@
 #'   moment).
 #' 
 #' @details
-#' This function produces an image plot of (cumulative) ranking
-#' probabilities for all treatments as a bar graph, a line graph or as
-#' step functions (argument \code{type}).
+#' This function produces plots of (cumulative) ranking probabilities for all
+#' treatments as a bar graph, a line graph or as step functions
+#' (argument \code{type}). All plots will be shown in a single figure if
+#' R package \bold{gridExtra} is installed. Otherwise, separate figures will be
+#' created for treatments.
 #'
 #' By default (argument \code{pooled}), results for the random effects
 #' model are shown if a network meta-analysis was conducted for both
@@ -43,7 +45,7 @@
 #' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Guido
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{rankogram}}
+#' @seealso \code{\link{rankogram}}, \code{\link[metadat]{dat.woods2010}}
 #'
 #' @references 
 #' Salanti G, Ades AE, Ioannidis JP (2011):
@@ -53,11 +55,11 @@
 #' \bold{64}, 163--71
 #' 
 #' @examples
-#' data(Woods2010)
 #' p1 <- pairwise(treatment, event = r, n = N, studlab = author,
-#'   data = Woods2010, sm = "OR")
+#'   data = dat.woods2010, sm = "OR")
 #' net1 <- netmeta(p1, small.values = "good")
 #'
+#' set.seed(1909) # get reproducible results
 #' ran1 <- rankogram(net1, nsim = 100)
 #' ran1
 #'
@@ -67,7 +69,6 @@
 #' 
 #' @method plot rankogram
 #' @export
-
 
 plot.rankogram <- function(x,
                            type = if (cumulative.rankprob) "step" else "bar",
@@ -79,8 +80,6 @@ plot.rankogram <- function(x,
   
   chkclass(x, c("rankogram"))
   x <- updateversion(x)
-  ##
-  is.installed.package("gridExtra")
   
   
   type <- setchar(type, c("bar", "line", "step"))
@@ -115,17 +114,15 @@ plot.rankogram <- function(x,
   
   
   mytheme <-
-    theme(axis.line.x = ggplot2::element_line(colour = "black", size = 1,
-                                              linetype = "solid"),
-          axis.line.y = ggplot2::element_line(colour = "black", size = 1,
-                                              linetype = "solid"),
-          panel.grid.major = ggplot2::element_line(color = "transparent"),
-          panel.grid.minor = ggplot2::element_line(color = "transparent"),
-          panel.background = ggplot2::element_rect(fill = "transparent"),
-          plot.background = ggplot2::element_rect(
-                                       fill = "transparent",
-                                       colour = "transparent",
-                                       size = 1)
+    theme(axis.line.x =
+            element_line(colour = "black", size = 1, linetype = "solid"),
+          axis.line.y =
+            element_line(colour = "black", size = 1, linetype = "solid"),
+          panel.grid.major = element_line(color = "transparent"),
+          panel.grid.minor = element_line(color = "transparent"),
+          panel.background = element_rect(fill = "transparent"),
+          plot.background =
+            element_rect(fill = "transparent", colour = "transparent", size = 1)
           )
   
   
@@ -159,24 +156,20 @@ plot.rankogram <- function(x,
     mymaxvalue <- max(x[[rankmatrix]])
     ##
     if (type == "bar")
-      p <- ggplot2::ggplot(mapping = aes(df$pos, df$ranks)) +
-        ggplot2::geom_col()
+      p <- ggplot(mapping = aes(df$pos, df$ranks)) + geom_col()
     else if (type == "line")
-      p <- ggplot2::ggplot(mapping = aes(df$pos, df$ranks)) +
-        ggplot2::geom_line()
+      p <- ggplot(mapping = aes(df$pos, df$ranks)) + geom_line()
     else if (type == "step")
-      p <- ggplot2::ggplot(mapping = aes(df$pos, df$ranks)) +
-        ggplot2::geom_step()
+      p <- ggplot(mapping = aes(df$pos, df$ranks)) + geom_step()
     ##
-    p <- p +
-      ggplot2::scale_x_continuous(breaks = seq(1, nrow(x[[rankmatrix]]), 1))
-    p <- p + ggplot2::labs(x = paste("Rank of", treats(treat, nchar.trts)))
-    p <- p + ggplot2::labs(y = ylab)
+    p <- p + scale_x_continuous(breaks = seq(1, nrow(x[[rankmatrix]]), 1))
+    p <- p + labs(x = paste("Rank of", treats(treat, nchar.trts)))
+    p <- p + labs(y = ylab)
     ##
     if (missing.ylim)
-      p <- p + ggplot2::expand_limits(x = c(1, x$x$n), y = c(0, mymaxvalue))
+      p <- p + expand_limits(x = c(1, x$x$n), y = c(0, mymaxvalue))
     else
-      p <- p + ggplot2::expand_limits(x = c(1, x$x$n), y = ylim)
+      p <- p + expand_limits(x = c(1, x$x$n), y = ylim)
     ##
     p + mytheme
   }
@@ -190,6 +183,12 @@ plot.rankogram <- function(x,
     trts.c <- setref(trts, treatnames, varname = "trts", length = 0)
     treatnames <- treatnames[treatnames %in% trts.c]
   }
-  ##
-  rankplots <- do.call(gridExtra::grid.arrange, lapply(treatnames, plotranks))
+  #
+  rankplots <- lapply(treatnames, plotranks)
+  names(rankplots) <- treatnames
+  #
+  if (is_installed_package("gridExtra", stop = FALSE))
+    return(do.call(gridExtra::grid.arrange, rankplots))
+  else
+    return(rankplots)
 }

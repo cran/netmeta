@@ -4,6 +4,8 @@
 #' This function generates a Hasse diagram for a partial order of
 #' treatment ranks in a network meta-analysis.
 #' 
+#' @aliases hasse hasse.netposet
+#' 
 #' @param x An object of class \code{netposet} (mandatory).
 #' @param pooled A character string indicating whether Hasse diagram
 #'   show be drawn for common (\code{"common"}) or random effects model
@@ -11,6 +13,7 @@
 #' @param newpage A logical value indicating whether a new figure
 #'   should be printed in an existing graphics window. Otherwise, the
 #'   Hasse diagram is added to the existing figure.
+#' @param \dots Additional arguments (ignored).
 #' 
 #' @details
 #' Generate a Hasse diagram (Carlsen & Bruggemann, 2014) for a partial
@@ -18,16 +21,17 @@
 #' Schwarzer, 2017).
 #' 
 #' This R function is a wrapper function for R function
-#' \code{\link[hasseDiagram]{hasse}} in R package \bold{hasseDiagram}
+#' \code{hasse} in R package \bold{hasseDiagram}
 #' (Krzysztof Ciomek, \url{https://github.com/kciomek/hasseDiagram}),
-#' i.e., function \code{hasse} can only be used if R package
+#' i.e., the function \code{hasse} can only be used if R package
 #' \bold{hasseDiagram} is installed.
 #' 
 #' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netposet}},
-#'   \code{\link{netrank}}, \code{\link{plot.netrank}}
+#'   \code{\link{netrank}}, \code{\link{plot.netrank}},
+#'   \code{\link[metadat]{dat.linde2015}}
 #' 
 #' @references
 #' Carlsen L, Bruggemann R (2014):
@@ -41,15 +45,13 @@
 #' \emph{Research Synthesis Methods},
 #' \bold{8}, 526--36
 #' 
+#' @name hasse.netposet
+#' 
 #' @keywords plot
 #' 
 #' @examples
 #' \dontrun{
-#' # Use depression dataset
-#' #
-#' data(Linde2015)
-#' 
-#' # Define order of treatments
+#' # Define order of treatments in depression dataset dat.linde2015
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
 #'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -63,7 +65,7 @@
 #' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(resp1, resp2, resp3),
 #'   n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "undesirable")
@@ -73,7 +75,7 @@
 #' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(remi1, remi2, remi3),
 #'   n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "undesirable")
@@ -84,15 +86,17 @@
 #' 
 #' # Hasse diagram
 #' #
-#' hasse(po)
+#' if (requireNamespace("hasseDiagram", quietly = TRUE))
+#'   hasse(po)
 #' }
 #' 
-#' @export hasse
+#' @method hasse netposet
+#' @export
 
-
-hasse <- function(x,
-                  pooled = ifelse(x$random, "random", "common"),
-                  newpage = TRUE) {
+hasse.netposet <- function(x,
+                           pooled = ifelse(x$random, "random", "common"),
+                           newpage = TRUE,
+                           ...) {
   
   chkclass(x, "netposet")
   x <- updateversion(x)
@@ -100,19 +104,28 @@ hasse <- function(x,
   pooled <- setchar(pooled, c("common", "random", "fixed"))
   pooled[pooled == "fixed"] <- "common"
   
-  if (!is.installed.package("hasseDiagram", stop = FALSE))
-    stop(paste0("Package 'hasseDiagram' missing.",
-                "\n  ",
-                "Please use the following R commands for installation:",
-                "\n  ",
-                "install.packages(\"BiocManager\")",
-                "\n  ",
-                "BiocManager::install()",
-                "\n  ",
-                "BiocManager::install(\"Rgraphviz\")",
-                "\n  ",
-                "install.packages(\"hasseDiagram\")"),
-         call. = FALSE)
+  if (!is_installed_package("hasseDiagram", stop = FALSE)) {
+    message(paste0("Package 'hasseDiagram' missing.",
+                   "\n  ",
+                   "Please use the following R commands for installation:",
+                   "\n  ",
+                   "install.packages(\"BiocManager\")",
+                   "\n  ",
+                   #"BiocManager::install()",
+                   #"\n  ",
+                   "BiocManager::install(\"Rgraphviz\")",
+                   "\n  ",
+                   #"install.packages(\"hasseDiagram\")",
+                   #"\n\n  ",
+                   #"If the last command fails, you could install the ",
+                   #"GitHub version of R package hasseDiagram:",
+                   #"\n  ",
+                   "install.packages(\"remotes\")",
+                   "\n  ",
+                   "remotes::install_github(\"kciomek/hasseDiagram\")"))
+    #
+    return(invisible(NULL))
+  }
   
   if (pooled == "common")
     M <- x$M.common
@@ -124,3 +137,10 @@ hasse <- function(x,
   
   invisible()
 }
+
+
+#' @rdname hasse.netposet
+#' @export
+
+hasse <- function(x, ...)
+  UseMethod("hasse")
