@@ -95,7 +95,7 @@
 #' \bold{8}, e76654
 #' 
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(Senn2013)
 #' 
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,

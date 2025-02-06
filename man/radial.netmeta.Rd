@@ -146,7 +146,7 @@ group. The text for this group can be specified with argument
 \code{text.comparator}.
 }
 \examples{
-\dontrun{
+\donttest{
 data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,

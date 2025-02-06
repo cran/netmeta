@@ -147,7 +147,7 @@
 #' # Result for comparison Face-to-face PST vs TCA + Placebo
 #' netcomparison(nc1, "Face-to-face PST", "TCA + Plac", nchar.comps = 4)
 #' 
-#' \dontrun{
+#' \donttest{
 #' # Artificial example
 #' t1 <- rep("A", 3)
 #' t2 <- c("B+C", "A+C", "C+D")

@@ -26,24 +26,28 @@ Count mortality statistics in randomised controlled trials of
 treatments for chronic obstructive pulmonary disease (Woods et
 al. (2010), Table 1).
 }
+\note{
+The dataset Woods2010 is identical to dataset
+\code{\link[metadat]{dat.woods2010}} in R package \bold{metadat}.
+}
 \examples{
-data(Woods2010)
+head(dat.woods2010)
 
+\donttest{
 # Transform data from long arm-based format to contrast-based
 # format Argument 'sm' has to be used for odds ratio as summary
-# measure; by default the risk ratio is used in the metabin
-# function called internally.
+# measure; by default the risk ratio is used in metabin() which is
+# called internally.
 #
-p1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = Woods2010, sm = "OR")
-p1
+pw1 <- pairwise(treatment, event = r, n = N,
+  studlab = author, data = dat.woods2010, sm = "OR")
+pw1
 
 # Conduct network meta-analysis
 #
-net1 <- netmeta(p1)
+net1 <- netmeta(pw1)
 net1
 
-\dontrun{
 # Show forest plot
 #
 forest(net1, ref = "Placebo", drop = TRUE,
@@ -51,7 +55,8 @@ forest(net1, ref = "Placebo", drop = TRUE,
 }
 }
 \seealso{
-\code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
+\code{\link[metadat]{dat.woods2010}},
+  \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmeta}}
 }
 \keyword{datasets}

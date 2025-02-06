@@ -319,16 +319,17 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
   data = face, ref = "placebo", sm = "OR", common = FALSE)
 net1
-forest(net1, xlim = c(0.2, 50))
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
 #
 nc1 <- netcomb(net1, inactive = "placebo")
 nc1
+
+\donttest{
+forest(net1, xlim = c(0.2, 50))
 forest(nc1, xlim = c(0.2, 50))
 
-\dontrun{
 # Specify, order of treatments
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",

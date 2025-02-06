@@ -108,7 +108,7 @@
 #' @keywords hplot
 #' 
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Define order of treatments in depression data set dat.linde2015
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
@@ -120,20 +120,20 @@
 #' 
 #' # (1) Early response
 #' #
-#' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, common = FALSE,
+#' net1 <- netmeta(pw1, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "undesirable")
 #' 
 #' # (2) Early remission
 #' #
-#' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, common = FALSE,
+#' net2 <- netmeta(pw2, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "undesirable")
 #' 
 #' # Partial order of treatment rankings
@@ -157,11 +157,11 @@
 #' 
 #' # (3) Loss to follow-up
 #' #
-#' p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net3 <- netmeta(p3, common = FALSE,
+#' net3 <- netmeta(pw3, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "desirable")
 #' 
 #' # Partial order of treatment rankings (with three outcomes) 
@@ -169,9 +169,12 @@
 #' po3 <- netposet(netrank(net1), netrank(net2), netrank(net3),
 #'   outcomes = outcomes)
 #' 
+#' \dontrun{
 #' # Hasse diagram
 #' #
-#' hasse(po3)
+#' if (requireNamespace("Rgraphviz", quietly = TRUE))
+#'   hasse(po3)
+#' }
 #' 
 #' # Scatter plot
 #' #

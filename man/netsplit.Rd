@@ -257,14 +257,14 @@ printed if argument \code{verbose = TRUE}. In addition, computation
 times are printed if R package \bold{tictoc} is installed.
 }
 \examples{
-p1 <- pairwise(treatment, event = r, n = N,
+pw1 <- pairwise(treatment, event = r, n = N,
   studlab = author, data = dat.woods2010, sm = "OR")
 #
-net1 <- netmeta(p1)
+net1 <- netmeta(pw1)
 #
 print(netsplit(net1), digits = 2)
 
-\dontrun{
+\donttest{
 print(netsplit(net1), digits = 2,
   backtransf = FALSE, common = FALSE)
 
@@ -291,9 +291,9 @@ print(netsplit(net2), digits = 2)
 # Layout of Puhan et al. (2014), Table 1
 print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
 
-p3 <- pairwise(treatment, death, randomized, studlab = id,
+pw3 <- pairwise(treatment, death, randomized, studlab = id,
   data = dat.dong2013, sm = "OR")
-net3 <- netmetabin(p3)
+net3 <- netmetabin(pw3)
 netsplit(net3)
 }
 

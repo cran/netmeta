@@ -66,7 +66,24 @@
 #' @keywords hplot
 #' 
 #' @examples
-#' # Add examples
+#' \donttest{
+#' data("Senn2013")
+#' # Add variable with (fictitious) risk of bias values
+#' Senn2013$rob <- NA
+#' set.seed(1909)
+#' for (i in unique(Senn2013$studlab))
+#'   Senn2013$rob[Senn2013$studlab == i] <- sample(1:3, 1)
+#' Senn2013$rob <- factor(Senn2013$rob, levels = 1:3,
+#'   labels = c("low", "moderate", "high"))
+#' # Conduct network meta-analysis
+#' net <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
+#'   data = Senn2013, sm = "MD", reference = "plac", nchar.trts = 4)
+#' # Conduct subgroup network meta-analysis
+#' sg <- subgroup(net, rob, common = FALSE)
+#' sg
+#' # Forest plot
+#' forest(sg)
+#' }
 #' 
 #' @method forest subgroup.netmeta
 #' @export

@@ -337,53 +337,53 @@
 
 
 #' @examples
-#' # Only consider first ten studies (to reduce runtime of example)
+#' # Only consider first four studies (to reduce runtime of example)
 #' #
-#' first10 <- subset(dat.dong2013, id <= 10)
+#' first4 <- subset(dat.dong2013, id <= 4)
 #' 
 #' # Transform data from long arm-based format to contrast-based
 #' # format. Argument 'sm' has to be used for odds ratio as summary
 #' # measure; by default the risk ratio is used in the metabin
 #' # function called internally.
 #' #
-#' p1 <- pairwise(treatment, death, randomized, studlab = id,
-#'   data = first10, sm = "OR")
+#' pw1 <- pairwise(treatment, death, randomized, studlab = id,
+#'   data = first4, sm = "OR")
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis (without continuity
 #' # correction)
 #' #
-#' nb1 <- netmetabin(p1, ref = "plac")
+#' nb1 <- netmetabin(pw1, ref = "plac")
 #' nb1
 #' 
 #' # Obtain the league table
 #' #
 #' netleague(nb1)
 #' 
-#' \dontrun{
+#' \donttest{
 #' # Conduct Mantel-Haenszel network meta-analysis for the whole
 #' # dataset
 #' #
-#' p2 <- pairwise(treatment, death, randomized, studlab = id,
+#' pw2 <- pairwise(treatment, death, randomized, studlab = id,
 #'   data = dat.dong2013, sm = "OR")
-#' netmetabin(p2, ref = "plac")
+#' netmetabin(pw2, ref = "plac")
 #'   
 #' # Conduct network meta-analysis using the non-central
 #' # hypergeometric model (without continuity correction)
 #' #
-#' netmetabin(p2, ref = "plac", method = "NCH")
+#' netmetabin(pw2, ref = "plac", method = "NCH")
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis (with continuity
 #' # correction of 0.5; include all studies)
 #' #
-#' netmetabin(p2, ref = "plac", cc.pooled = TRUE)
+#' netmetabin(pw2, ref = "plac", cc.pooled = TRUE)
 #' 
-#' p3 <- pairwise(treatment, death, n, studlab = study,
+#' pw3 <- pairwise(treatment, death, n, studlab = study,
 #'   data = dat.gurusamy2011, sm = "OR")
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis (without continuity
 #' # correction)
 #' #
-#' netmetabin(p3, ref = "cont")
+#' netmetabin(pw3, ref = "cont")
 #' }
 #' 
 #' @export netmetabin

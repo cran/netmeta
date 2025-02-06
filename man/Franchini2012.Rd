@@ -49,19 +49,24 @@ and four active drugs. These data are used as an example in the
 supplemental material of Dias et al. (2013) where placebo is coded
 as 1 and the four active drugs as 2 to 5.
 }
+\note{
+The dataset Franchini2012 is identical to dataset
+\code{\link[metadat]{dat.franchini2012}} in R package \bold{metadat}.
+}
 \examples{
-Franchini2012 <- dat.franchini2012
+head(dat.franchini2012)
 
+\donttest{
 # Transform data from arm-based format to contrast-based format
 #
-p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
+pw1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
   n = list(n1, n2, n3),
   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-  data = Franchini2012, studlab = Study)
-p1
+  data = dat.franchini2012, studlab = Study)
+pw1
 
 # Conduct network meta-analysis
-net1 <- netmeta(p1)
+net1 <- netmeta(pw1)
 net1
 
 # Draw network graphs
@@ -73,6 +78,7 @@ netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
 netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
   thickness = "se.common",
   iterate = TRUE, plastic = TRUE, start = "eigen")
+}
 }
 \seealso{
 \code{\link[metadat]{dat.franchini2012}},

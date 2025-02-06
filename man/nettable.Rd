@@ -193,17 +193,18 @@ networks. Crude information on the computation progress is printed
 for SIDDE if argument \code{verbose} is \code{TRUE}.
 }
 \examples{
-p1 <- pairwise(treatment, event = r, n = N,
+pw1 <- pairwise(treatment, event = r, n = N,
   studlab = author, data = dat.woods2010, sm = "OR")
 #
-net1 <- netmeta(p1)
+net1 <- netmeta(pw1)
 #
 nt1 <- nettable(net1, digits = 2)
 nt1
+
+\donttest{
 print(nt1, common = FALSE)
 print(nt1, random = FALSE)
 
-\dontrun{
 # Create a CSV file with network table from random effects model
 #
 table1 <- nettable(net1, digits = 2, bracket = "(", separator = " to ")

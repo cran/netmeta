@@ -57,6 +57,7 @@
 #' @keywords hplot
 #' 
 #' @examples
+#' \donttest{
 #' data(Linde2016)
 #' 
 #' # Only consider studies including Face-to-face PST (to reduce
@@ -85,6 +86,7 @@
 #' # Component effects
 #' #
 #' forest(netcomplex(nc1, nc1$comps))
+#' }
 #' 
 #' @method forest netcomplex
 #' @export

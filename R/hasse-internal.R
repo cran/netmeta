@@ -174,7 +174,7 @@ hasse_hasseDiagram <- function(M, parameters = list()) {
   
   # Build graph
   #
-  graph <- as(graphAM(M, "directed"), "graphNEL")
+  graph <- as(graph::graphAM(M, "directed"), "graphNEL")
   
   nAttrs <- list()
   nAttrs$width <- sapply(labels, function(x) { nWi(x, parameters) })
@@ -185,16 +185,19 @@ hasse_hasseDiagram <- function(M, parameters = list()) {
   subGList <- list()
   
   for (i in seq_len(max(ranks))) {
-    subGList[[length(subGList) + 1]] <- list(graph = subGraph(rownames(M)[which(ranks == i)], graph),
-                                             cluster = FALSE)
+    subGList[[length(subGList) + 1]] <-
+      list(graph =
+             graph::subGraph(rownames(M)[which(ranks == i)], graph),
+           cluster = FALSE)
   }
   
-  ragraph <- agopen(graph,
-                    name = "graph",
-                    subGList = subGList,
-                    attrs = list(node = list(shape = "box"),
-                                 graph = list(rank = "same", rankdir = "TB")),
-                    nodeAttrs = nAttrs)
+  ragraph <-
+    Rgraphviz::agopen(graph,
+                      name = "graph",
+                      subGList = subGList,
+                      attrs = list(node = list(shape = "box"),
+                                   graph = list(rank = "same", rankdir = "TB")),
+                      nodeAttrs = nAttrs)
   # Draw graph
   #
   if (parameters$newpage) {
@@ -352,13 +355,13 @@ hasseGrob <- function(graph, labels, parameters) {
 
 drawDetails.hasseGrob <- function(x, recording) {
   g <- x$graph
-  ur <- upRight(boundBox(g))
-  bl <- botLeft(boundBox(g))
+  ur <- Rgraphviz::upRight(Rgraphviz::boundBox(g))
+  bl <- Rgraphviz::botLeft(Rgraphviz::boundBox(g))
   
   vp <- viewport(width = unit(0.96, "npc"),
                  height = unit(0.96, "npc"),
-                 xscale = c(getX(bl), getX(ur)),
-                 yscale = c(getY(bl), getY(ur)))
+                 xscale = c(Rgraphviz::getX(bl), Rgraphviz::getX(ur)),
+                 yscale = c(Rgraphviz::getY(bl), Rgraphviz::getY(ur)))
   
   pushViewport(vp)
     
@@ -367,7 +370,7 @@ drawDetails.hasseGrob <- function(x, recording) {
   dir <- x$parameters$arrow
   gp <- gpar(col = x$parameters$col.lines, lwd = x$parameters$lwd)
   
-  for (edge in AgEdge(g)) {
+  for (edge in Rgraphviz::AgEdge(g)) {
     nrLines <- length(edge@splines)
     
     for (i in seq_len(nrLines)) {
@@ -396,7 +399,7 @@ drawDetails.hasseGrob <- function(x, recording) {
                        type = "open")
       }
       
-      bp <- bezierPoints(edge@splines[[i]])
+      bp <- Rgraphviz::bezierPoints(edge@splines[[i]])
       grid.lines(bp[, 1], bp[, 2], default.units = "native",
                  arrow = arrow, gp = gp)
     }
@@ -404,12 +407,13 @@ drawDetails.hasseGrob <- function(x, recording) {
   
   # Draw nodes
   #
-  for (agNode in AgNode(g)) {
-    center <- getNodeCenter(agNode)
-    centerX <- unit(getX(center), "native")
-    centerY <- unit(getY(center), "native")
-    width <- unit(getNodeRW(agNode) + getNodeLW(agNode), "native")
-    height <- unit(getNodeHeight(agNode), "native")
+  for (agNode in Rgraphviz::AgNode(g)) {
+    center <- Rgraphviz::getNodeCenter(agNode)
+    centerX <- unit(Rgraphviz::getX(center), "native")
+    centerY <- unit(Rgraphviz::getY(center), "native")
+    width <- unit(Rgraphviz::getNodeRW(agNode) + Rgraphviz::getNodeLW(agNode),
+                  "native")
+    height <- unit(Rgraphviz::getNodeHeight(agNode), "native")
     
     drawNode(centerX, centerY, width, height,
              unlist(x$labels[agNode@name]), x$parameters)

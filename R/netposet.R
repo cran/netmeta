@@ -144,7 +144,7 @@
 #' \bold{64}, 163--71
 #' 
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Define order of treatments in depression dataset linde2015
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
@@ -156,20 +156,20 @@
 #' 
 #' # (1) Early response
 #' #
-#' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, common = FALSE,
+#' net1 <- netmeta(pw1, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "undesirable")
 #' 
 #' # (2) Early remission
 #' #
-#' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, common = FALSE,
+#' net2 <- netmeta(pw2, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "undesirable")
 #' 
 #' # Partial order of treatment rankings (two outcomes)
@@ -178,7 +178,10 @@
 #' 
 #' # Hasse diagram
 #' #
-#' hasse(po)
+#' \dontrun{
+#' if (requireNamespace("Rgraphviz", quietly = TRUE))
+#'   hasse(po)
+#' }
 #'
 #' 
 #' #
@@ -190,29 +193,29 @@
 #' 
 #' # (3) Loss to follow-up
 #' #
-#' p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net3 <- netmeta(p3, common = FALSE,
+#' net3 <- netmeta(pw3, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "desirable")
 #' 
 #' # (4) Loss to follow-up due to adverse events
 #' #
-#' p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
 #'   studlab = id, data = subset(dat.linde2015, id != 55), sm = "OR")
 #' #
-#' net4 <- netmeta(p4, common = FALSE,
+#' net4 <- netmeta(pw4, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "desirable")
 #' 
 #' # (5) Adverse events
 #' #
-#' p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net5 <- netmeta(p5, common = FALSE,
+#' net5 <- netmeta(pw5, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "desirable")
 #' 
 #' # Partial order of treatment rankings (all five outcomes)
@@ -231,15 +234,21 @@
 #' #
 #' po.nets$P.random
 #' 
+#' \dontrun{
+#' if (requireNamespace("Rgraphviz", quietly = TRUE)) {
 #' # Hasse diagram for all outcomes (random effects model)
 #' #
 #' hasse(po.ranks)
+#' }
+#' }
 #' 
 #' # Hasse diagram for outcomes early response and early remission
 #' #
 #' po12 <- netposet(netrank(net1), netrank(net2),
 #'   outcomes = outcomes[1:2])
+#' \dontrun{
 #' hasse(po12)
+#' }
 #' 
 #' # Scatter plot
 #' #
@@ -276,8 +285,12 @@
 #' po
 #' po12
 #' #
-#' hasse(po)
-#' hasse(po12)
+#' \dontrun{
+#' if (requireNamespace("Rgraphviz", quietly = TRUE)) {
+#'   hasse(po)
+#'   hasse(po12)
+#' }
+#' }
 #' #
 #' oldpar <- par(pty = "s")
 #' plot(po12)

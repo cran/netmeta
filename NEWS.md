@@ -1,3 +1,18 @@
+## netmeta, version 3.1-1 (2025-02-05)
+
+### Major changes
+
+* Hasse diagrams only available after installation of R package
+  **Rgraphviz** from [Bioconductor](https://www.bioconductor.org/)
+
+* Move R packages **Rgraphviz** and **graph** back to Suggests
+  (no dependency on [Bioconductor](https://www.bioconductor.org/) package)
+
+* Use donttest- instead of dontrun-environments in examples
+
+* Get total runtime for examples below 300 seconds
+
+
 ## netmeta, version 3.1-0 (2025-02-04)
 
 ### Major changes

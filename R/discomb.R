@@ -355,6 +355,7 @@
 #' dc1 <- discomb(mean, se.mean, t1, t2, study, seq = trts)
 #' dc1
 #' 
+#' \donttest{
 #' forest(dc1, ref = "F")
 #' 
 #' # Define C matrix manually (which will produce the same results)
@@ -379,6 +380,7 @@
 #' # Compare C matrices
 #' #
 #' all.equal(dc1$C.matrix, dc2$C.matrix)
+#' }
 #' 
 #' @export discomb
 

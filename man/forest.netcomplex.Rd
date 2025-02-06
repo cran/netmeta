@@ -88,6 +88,7 @@ the active graphics window. For more information see help page of
 \code{\link[meta]{forest.meta}} function.
 }
 \examples{
+\donttest{
 data(Linde2016)
 
 # Only consider studies including Face-to-face PST (to reduce
@@ -116,6 +117,7 @@ forest(netcomplex(nc1, ints), nchar.comps = 4)
 # Component effects
 #
 forest(netcomplex(nc1, nc1$comps))
+}
 
 }
 \seealso{

@@ -95,14 +95,19 @@ Senn2013.5 <- subset(Senn2013, studlab \%in\% studies[1:5])
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
   data = Senn2013.5, sm = "MD", reference = "plac")
         
-# Generate a net heat plot based on a common effects model
+# Generate a net heat plot based on the common effects model
 #
 netheat(net1) 
 
-\dontrun{
-# Generate a net heat plot based on a random effects model
+\donttest{
+# Conduct network meta-analysis with placebo as reference treatment
 #
-netheat(net1, random = TRUE)
+net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+  data = Senn2013, sm = "MD", reference = "plac")
+        
+# Generate a net heat plot based on the random effects model
+#
+netheat(net2) 
 }
 
 }

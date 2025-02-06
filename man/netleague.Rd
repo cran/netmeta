@@ -177,9 +177,10 @@ rows and columns in the league table (see examples).
 \examples{
 # Network meta-analysis of count mortality statistics
 #
-p0 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = dat.woods2010, sm = "OR")
-net0 <- netmeta(p0)
+pw0 <- pairwise(treatment, event = r, n = N,
+  studlab = author, data = dat.woods2010, sm = "OR",
+  reference.group = "Placebo")
+net0 <- netmeta(pw0)
 
 oldopts <- options(width = 100)
 
@@ -189,6 +190,7 @@ oldopts <- options(width = 100)
 #
 netleague(net0, digits = 2, bracket = "(", separator = " - ")
 
+\donttest{
 # League table for common effects model
 #
 netleague(net0, random = FALSE, digits = 2)
@@ -200,7 +202,6 @@ netleague(net0, common = FALSE, digits = 2, seq = netrank(net0))
 #
 print(netrank(net0), common = FALSE)
 
-\dontrun{
 # Create a CSV file with league table for random effects model
 #
 league0 <- netleague(net0, digits = 2, bracket = "(", separator = " to ")
@@ -213,9 +214,7 @@ write.table(league0$random, file = "league0-random.csv",
 #
 netleague(net0, digits = 2, bracket = "(", separator = " to ",
           path = tempfile(fileext = ".xlsx"))
-}
 
-\donttest{
 # Define order of treatments in depression dataset dat.linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
@@ -227,21 +226,21 @@ outcomes <- c("Early response", "Early remission")
 
 # (1) Early response
 #
-p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
   studlab = id, data = dat.linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, common = FALSE,
-                seq = trts, ref = "Placebo", small = "undesirable")
+net1 <- netmeta(pw1, common = FALSE,
+  seq = trts, ref = "Placebo", small = "undesirable")
 
 # (2) Early remission
 #
-p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
   studlab = id, data = dat.linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, common = FALSE,
-                seq = trts, ref = "Placebo", small = "undesirable")
+net2 <- netmeta(pw2, common = FALSE,
+  seq = trts, ref = "Placebo", small = "undesirable")
 
 options(width = 200)
 netleague(net1, digits = 2)
@@ -261,25 +260,25 @@ netleague(net1, net2, seq = netrank(net2), ci = FALSE)
 netrank(net1)
 netrank(net2)
 
-
 # Report results for network meta-analysis twice
 #
 netleague(net1, net1, seq = netrank(net1), ci = FALSE,
   backtransf = FALSE)
 netleague(net1, net1, seq = netrank(net1), ci = FALSE,
   backtransf = FALSE, direct = TRUE)
-}
 
-options(oldopts)
-
-\dontrun{
 # Generate a partial order of treatment rankings 
 #
 np <- netposet(net1, net2, outcomes = outcomes)
 plot(np)
-
-hasse(np)
 }
+
+\dontrun{
+if (requireNamespace("Rgraphviz", quietly = TRUE))
+  hasse(np)
+}
+
+options(oldopts)
 
 }
 \references{

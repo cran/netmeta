@@ -120,6 +120,7 @@
 #' \bold{31}, 3805--20
 #' 
 #' @examples
+#' \donttest{
 #' data(Senn2013)
 #' 
 #' # Only consider first five studies (to reduce runtime of example)
@@ -135,6 +136,7 @@
 #' # Decomposition of Cochran's Q
 #' #
 #' decomp.design(net1)
+#' }
 #' 
 #' @export decomp.design
 

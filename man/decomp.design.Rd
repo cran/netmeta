@@ -112,6 +112,7 @@ to the inconsistency assessment. These designs are not included in
 \code{Q.inc.detach}.
 }
 \examples{
+\donttest{
 data(Senn2013)
 
 # Only consider first five studies (to reduce runtime of example)
@@ -127,6 +128,7 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 # Decomposition of Cochran's Q
 #
 decomp.design(net1)
+}
 
 }
 \references{

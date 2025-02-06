@@ -145,6 +145,7 @@ the additive network meta-analysis model might be possible, see
 \link{discomb} function.
 }
 \examples{
+\donttest{
 data(Senn2013)
 
 nc1 <- netconnection(treat1, treat2, studlab, data = Senn2013)
@@ -158,7 +159,6 @@ nc1$n.subnets
 #
 nc1$D.matrix
 
-\dontrun{
 # Conduct network meta-analysis (results not shown)
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data = Senn2013)

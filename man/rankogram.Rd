@@ -25,9 +25,9 @@ rankograms:
 }
 }
 \examples{
-p1 <- pairwise(treatment, event = r, n = N, studlab = author,
+pw1 <- pairwise(treatment, event = r, n = N, studlab = author,
   data = dat.woods2010, sm = "OR")
-net1 <- netmeta(p1, small.values = "desirable")
+net1 <- netmeta(pw1, small.values = "desirable")
 
 set.seed(1909) # get reproducible results
 ran1 <- rankogram(net1, nsim = 100)

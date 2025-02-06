@@ -68,23 +68,24 @@
 #' \bold{64}, 163--71
 #'
 #' @examples
-#' p1 <- pairwise(treatment, event = r, n = N, studlab = author,
+#' pw1 <- pairwise(treatment, event = r, n = N, studlab = author,
 #'   data = dat.woods2010, sm = "OR")
-#' net1 <- netmeta(p1, small.values = "desirable")
+#' net1 <- netmeta(pw1, small.values = "desirable")
 #'
 #' set.seed(1909) # get reproducible results
-#' ran1 <- rankogram(net1, nsim = 100, common = FALSE,
+#' ran1 <- rankogram(net1, common = FALSE, nsim = 10, # reduce runtime
 #'   keep.samples = TRUE)
 #' ran1
 #' 
 #' rankogram(ran1$samples.random, pooled = "random")
 #' 
-#' \dontrun{
-#' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' \donttest{
+#' pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, common = FALSE, ref = "Placebo", small = "undesirable")
+#' net2 <- netmeta(pw2, common = FALSE,
+#'   ref = "Placebo", small = "undesirable")
 #' 
 #' ran2 <- rankogram(net2, nsim = 100, common = FALSE,
 #'   keep.samples = TRUE)

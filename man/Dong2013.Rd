@@ -25,32 +25,25 @@ treatment comparison meta-analysis of randomised controlled trials.
 Network meta-analysis comparing inhaled medications in patients
 with chronic obstructive pulmonary disease.
 }
+\note{
+The dataset Dong2013 is identical to dataset
+\code{\link[metadat]{dat.dong2013}} in R package \bold{metadat}.
+}
 \examples{
-Dong2013 <- dat.dong2013
+head(dat.dong2013)
 
+\donttest{
 # Transform data from long arm-based format to contrast-based
 # format. Argument 'sm' has to be used for odds ratio as summary
 # measure; by default the risk ratio is used in the metabin
 # function called internally.
 #
-p1 <- pairwise(treatment, death, randomized, studlab = id,
-  data = Dong2013, sm = "OR")
-
-# Only consider first ten studies (to reduce runtime of example)
-#
-p1.10 <- subset(p1, id <= 10)
+pw1 <- pairwise(treatment, death, randomized, studlab = id,
+  data = dat.dong2013, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis
 #
-netmetabin(p1.10, ref = "plac")
-
-\dontrun{
-# Conduct Mantel-Haenszel network meta-analysis for the whole
-# dataset
-#
-p2 <- pairwise(treatment, death, randomized, studlab = id,
-  data = Dong2013, sm = "OR")
-netmetabin(p2, ref = "plac")
+netmetabin(pw1, ref = "plac")
 }
 }
 \seealso{

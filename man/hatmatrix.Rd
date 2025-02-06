@@ -165,9 +165,9 @@ is used to calculate the transition matrices for the random walk in
 \examples{
 # Only consider first ten studies for concise output
 first10 <- subset(dat.dong2013, id <= 10)
-p1 <- pairwise(treatment, death, randomized, studlab = id,
+pw1 <- pairwise(treatment, death, randomized, studlab = id,
   data = first10, sm = "OR")
-net1 <- netmeta(p1, common = FALSE)
+net1 <- netmeta(pw1, common = FALSE)
 
 hatmatrix(net1)
 hatmatrix(net1, method = "k")

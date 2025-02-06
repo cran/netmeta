@@ -153,9 +153,10 @@ net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #
 nc1 <- netcomb(net1)
 nc1
+
+\donttest{
 print(nc1, digits = 2, digits.stat = 3)
 
-\dontrun{
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,

@@ -148,7 +148,7 @@ An object of class \code{"subgroup.netmeta"} with corresponding \code{print}
 Subgroup analysis for objects of class \code{netmeta}.
 }
 \examples{
-\dontrun{
+\donttest{
 data("Senn2013")
 # Add variable with (fictitious) risk of bias values
 Senn2013$rob <- NA

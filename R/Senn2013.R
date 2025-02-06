@@ -58,7 +58,7 @@
 #' data(Senn2013)
 #' head(Senn2013)
 #' 
-#' \dontrun{
+#' \donttest{
 #' # Common effects model
 #' #
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
@@ -82,6 +82,5 @@
 #' net2
 #' forest(net2, ref = "plac")
 #' }
-
 
 NULL

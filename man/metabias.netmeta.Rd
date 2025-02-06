@@ -96,7 +96,7 @@ is \code{TRUE}, all comparators will be lumped into a single
 group.
 }
 \examples{
-\dontrun{
+\donttest{
 data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,

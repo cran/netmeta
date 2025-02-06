@@ -74,7 +74,7 @@
 #' @seealso \code{\link{forest.subgroup.netmeta}}, \code{\link{forest.netmeta}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data("Senn2013")
 #' # Add variable with (fictitious) risk of bias values
 #' Senn2013$rob <- NA

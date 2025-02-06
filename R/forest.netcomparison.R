@@ -57,6 +57,7 @@
 #' @keywords hplot
 #' 
 #' @examples
+#' \donttest{
 #' data(Linde2016)
 #' 
 #' # Only consider studies including Face-to-face PST (to reduce
@@ -84,6 +85,7 @@
 #' forest(netcomparison(nc1, t1, t2))
 #' forest(netcomparison(nc1, t1, t2), nchar.comps = 4)
 #' forest(netcomparison(nc1, c("F", "TCA"), "UC"), nchar.comps = 4)
+#' }
 #' 
 #' @method forest netcomparison
 #' @export

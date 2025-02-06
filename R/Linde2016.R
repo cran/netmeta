@@ -39,29 +39,16 @@
 #' 
 #' @examples
 #' data(Linde2016)
+#' head(Linde2016)
 #' 
-#' # Only consider studies including Face-to-face PST (to reduce
-#' # runtime of example)
-#' #
-#' face <- subset(Linde2016, id %in% c(16, 24, 49, 118))
-#' 
+#' \donttest{
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'   data = face, reference.group = "placebo",
-#'   sm = "OR", common = FALSE, nchar.trts = 6)
-#' #
-#' net1
-#' 
-#' \dontrun{
-#' # Conduct random effects network meta-analysis
-#' #
-#' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'   data = Linde2016, reference.group = "placebo",
 #'   sm = "OR", common = FALSE, nchar.trts = 6)
 #' #
-#' net2
+#' net1
 #' }
-
 
 NULL

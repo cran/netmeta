@@ -93,7 +93,7 @@
 #' @keywords hplot
 #' 
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Define order of treatments in depression dataset dat.linde2015
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
@@ -105,20 +105,20 @@
 #' 
 #' # (1) Early response
 #' #
-#' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, common = FALSE,
+#' net1 <- netmeta(pw1, common = FALSE,
 #'   seq = trts, ref = "Placebo")
 #' 
 #' # (2) Early remission
 #' #
-#' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, common = FALSE,
+#' net2 <- netmeta(pw2, common = FALSE,
 #'   seq = trts, ref = "Placebo")
 #' 
 #' # Image plot of treatment rankings (two outcomes)
@@ -136,27 +136,27 @@
 #' 
 #' # (3) Loss to follow-up
 #' #
-#' p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net3 <- netmeta(p3, common = FALSE, seq = trts, ref = "Placebo")
+#' net3 <- netmeta(pw3, common = FALSE, seq = trts, ref = "Placebo")
 #' 
 #' # (4) Loss to follow-up due to adverse events
 #' #
-#' p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
 #'   studlab = id, data = subset(dat.linde2015, id != 55), sm = "OR")
 #' #
-#' net4 <- netmeta(p4, common = FALSE, seq = trts, ref = "Placebo")
+#' net4 <- netmeta(pw4, common = FALSE, seq = trts, ref = "Placebo")
 #' 
 #' # (5) Adverse events
 #' #
-#' p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#' pw5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
 #'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
-#' net5 <- netmeta(p5, common = FALSE, seq = trts, ref = "Placebo")
+#' net5 <- netmeta(pw5, common = FALSE, seq = trts, ref = "Placebo")
 #' 
 #' # Image plot of treatment rankings (two outcomes)
 #' #

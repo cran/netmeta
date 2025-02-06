@@ -57,6 +57,7 @@
 #' @keywords hplot
 #' 
 #' @examples
+#' \donttest{
 #' data(Linde2016)
 #' 
 #' # Only consider studies including Face-to-face PST (to reduce
@@ -87,6 +88,7 @@
 #'   fontsize = 10, spacing = 0.7, squaresize = 0.9,
 #'   label.left = "Favours Placebo",
 #'   label.right = "Favours other")
+#' }
 #' 
 #' @method forest netbind
 #' @export

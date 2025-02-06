@@ -50,9 +50,9 @@ be printed if deprecated arguments are used.}
 Print method for objects of class \code{rankogram}.
 }
 \examples{
-p1 <- pairwise(treatment, event = r, n = N, studlab = author,
+pw1 <- pairwise(treatment, event = r, n = N, studlab = author,
   data = dat.woods2010, sm = "OR")
-net1 <- netmeta(p1, small.values = "desirable")
+net1 <- netmeta(pw1, small.values = "desirable")
 
 ran1 <- rankogram(net1, nsim = 100)
 ran1

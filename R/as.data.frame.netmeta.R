@@ -19,20 +19,20 @@
 #' @seealso \code{\link{netmeta}}
 #' 
 #' @examples
+#' \donttest{
 #' data(smokingcessation)
 #' 
 #' # Transform data from arm-based format to contrast-based format
 #' #
-#' p1 <- pairwise(list(treat1, treat2, treat3),
+#' pw1 <- pairwise(list(treat1, treat2, treat3),
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
 #'   data = smokingcessation, sm = "OR")
 #' 
 #' # Conduct random effects network meta-analysis and show data frame
 #' #
-#' net1 <- netmeta(p1, common = FALSE)
+#' net1 <- netmeta(pw1, common = FALSE)
 #' as.data.frame(net1)
 #' 
-#' \dontrun{
 #' data(Senn2013)
 #' 
 #' # Conduct network meta-analysis

@@ -23,7 +23,12 @@
 #' \bold{\emph{total}}\tab number of individuals in treatment arm
 #' }
 #' 
-#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
+#' @note
+#' The dataset Dogliotti2014 is identical to dataset
+#' \code{\link[metadat]{dat.dogliotti2014}} in R package \bold{metadat}.
+#' 
+#' @seealso \code{\link[metadat]{dat.dogliotti2014}},
+#'   \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
 #'   \code{\link{netmetabin}}
 #' 
 #' @source
@@ -36,22 +41,20 @@
 #' @keywords datasets
 #' 
 #' @examples
-#' data(Dogliotti2014)
-#' Dogliotti2014
+#' head(dat.dogliotti2014)
 #' 
-#' \dontrun{
+#' \donttest{
 #' # Transform data from long arm-based format to contrast-based
 #' # format. Argument 'sm' has to be used for odds ratio as summary
 #' # measure; by default the risk ratio is used in the metabin
 #' # function called internally.
 #' #
-#' p1 <- pairwise(treatment, stroke, total, studlab = study,
-#'   data = Dogliotti2014, sm = "OR")
+#' pw1 <- pairwise(treatment, stroke, total, studlab = study,
+#'   data = dat.dogliotti2014, sm = "OR")
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis
 #' #
-#' netmetabin(p1, ref = "plac")
+#' netmetabin(pw1, ref = "plac")
 #' }
-
 
 NULL

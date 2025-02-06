@@ -178,7 +178,7 @@ netcomplex(nc1, "F + S", nchar.comps = 4)
 # Result for combination Face-to-face PST + SSRI + Placebo
 netcomplex(nc1, "Face-to-face PST + SSRI + Plac", nchar.comps = 4)
 
-\dontrun{
+\donttest{
 # Artificial example
 t1 <- rep("A", 3)
 t2 <- c("B+C", "A+C", "C+D")

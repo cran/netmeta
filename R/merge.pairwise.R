@@ -24,14 +24,14 @@
 #' # measure; by default the risk ratio is used in the metabin
 #' # function called internally.
 #' #
-#' p1 <- pairwise(treatment, event = r, n = N,
+#' pw1 <- pairwise(treatment, event = r, n = N,
 #'   studlab = author, data = dat.woods2010, sm = "OR")
-#' head(p1)
+#' head(pw1)
 #' 
 #' # Add information on network connectivity
-#' nc1 <- netconnection(p1)
-#' p1nc1 <- merge(p1, nc1)
-#' head(p1nc1)
+#' nc1 <- netconnection(pw1)
+#' pw1nc1 <- merge(pw1, nc1)
+#' head(pw1nc1)
 #'
 #' @method merge pairwise
 #' @export

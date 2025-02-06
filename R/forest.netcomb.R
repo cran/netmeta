@@ -82,26 +82,8 @@
 #' @keywords hplot
 #' 
 #' @examples
+#' \donttest{
 #' data(Linde2016)
-#' 
-#' # Only consider studies including Face-to-face PST (to reduce
-#' # runtime of example)
-#' #
-#' face <- subset(Linde2016, id %in% c(16, 24, 49, 118))
-#' 
-#' # Conduct random effects network meta-analysis
-#' #
-#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'   data = face, ref = "placebo", sm = "OR", common = FALSE)
-#' 
-#' # Additive model for treatment components (with placebo as inactive
-#' # treatment)
-#' #
-#' nc1 <- netcomb(net1, inactive = "placebo")
-#' #
-#' forest(nc1)
-#' 
-#' \dontrun{
 #' # Specify, order of treatments
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
@@ -119,18 +101,18 @@
 #' 
 #' # Conduct random effects network meta-analysis
 #' #
-#' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'   data = Linde2016, ref = "placebo",
 #'   seq = trts, sm = "OR", common = FALSE)
 #' #
-#' net2
+#' net1
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
 #' #
-#' nc2 <- netcomb(net2, inactive = "placebo")
+#' nc1 <- netcomb(net1, inactive = "placebo")
 #' #
-#' forest(nc2)
+#' forest(nc1)
 #' }
 #' 
 #' @method forest netcomb

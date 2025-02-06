@@ -61,29 +61,34 @@ Network meta-analysis of nine classes of antidepressants including
 placebo for the primary care setting; partly shown in Linde et
 al. (2015), supplementary Table 2.
 }
+\note{
+The dataset Linde2015 is identical to dataset
+\code{\link[metadat]{dat.linde2015}} in R package \bold{metadat}.
+}
 \examples{
-data(Linde2015)
+head(dat.linde2015)
 
+\donttest{
 # Transform data from arm-based format to contrast-based format
 # Outcome: early response
-p1 <- pairwise(list(treatment1, treatment2, treatment3),
+pw1 <- pairwise(list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3),
   n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
-p1
+  studlab = id, data = dat.linde2015, sm = "OR")
+pw1
 
-\dontrun{
 # Define order of treatments
 trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI",
   "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 
 # Conduct random effects network meta-analysis
-net1 <- netmeta(p1, common = FALSE, reference = "Placebo", seq = trts)
+net1 <- netmeta(pw1, common = FALSE, reference = "Placebo", seq = trts)
 print(net1, digits = 2)
 }
 }
 \seealso{
-\code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
+\code{\link[metadat]{dat.dong2013}},
+  \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmeta}}, \code{\link{netposet}}
 }
 \keyword{datasets}

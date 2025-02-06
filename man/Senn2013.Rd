@@ -54,7 +54,7 @@ and \code{treat2.long}.
 data(Senn2013)
 head(Senn2013)
 
-\dontrun{
+\donttest{
 # Common effects model
 #
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,

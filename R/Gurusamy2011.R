@@ -19,7 +19,12 @@
 #' \bold{\emph{n}}\tab number of individuals in treatment arm
 #' } 
 #' 
-#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
+#' @note
+#' The dataset Gurusamy2011 is identical to dataset
+#' \code{\link[metadat]{dat.gurusamy2011}} in R package \bold{metadat}.
+#' 
+#' @seealso \code{\link[metadat]{dat.gurusamy2011}},
+#'   \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
 #'   \code{\link{netmetabin}}
 #' 
 #' @source
@@ -33,32 +38,20 @@
 #' @keywords datasets
 #' 
 #' @examples
-#' data(Gurusamy2011)
+#' head(dat.gurusamy2011)
 #' 
-#' # Only consider three studies (to reduce runtime of example)
-#' #
-#' studies <- c("Findlay 2001", "Garcia-Huete 1997", "Dalmau 2000")
-#' three <- subset(Gurusamy2011, study %in% studies)
-#' 
+#' \donttest{
 #' # Transform data from long arm-based format to contrast-based
 #' # format. Argument 'sm' has to be used for odds ratio as summary
 #' # measure; by default the risk ratio is used in the metabin
 #' # function called internally.
 #' #
-#' p1 <- pairwise(treatment, death, n, studlab = study,
-#'   data = three, sm = "OR")
+#' pw1 <- pairwise(treatment, death, n, studlab = study,
+#'   data = dat.gurusamy2011, sm = "OR")
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis
 #' #
-#' netmetabin(p1, ref = "cont")
-#' 
-#' \dontrun{
-#' p2 <- pairwise(treatment, death, n, studlab = study,
-#'   data = Gurusamy2011, sm = "OR")
-#' 
-#' # Conduct Mantel-Haenszel network meta-analysis
-#' netmetabin(p2, ref = "cont")
+#' netmetabin(pw1, ref = "cont")
 #' }
-
 
 NULL

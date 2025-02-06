@@ -262,13 +262,8 @@
 #'
 #' @importFrom grDevices colours col2rgb heat.colors rainbow rgb xy.coords
 #'
-#' @importFrom graph graphAM subGraph
-#'
 #' @importFrom graphics axis box lines par points plot polygon rect
 #'   text strheight strwidth title
-#' 
-#' @importFrom Rgraphviz AgEdge AgNode agopen bezierPoints boundBox botLeft
-#'   getNodeCenter getNodeHeight getNodeLW getNodeRW getX getY upRight
 #'
 #' @importFrom ggplot2 ggplot aes xlab ylab labs
 #'    element_blank element_line element_rect element_text expand_limits

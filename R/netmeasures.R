@@ -85,13 +85,13 @@
 #' 
 #' # Transform data from arm-based format to contrast-based format
 #' #
-#' p1 <- pairwise(list(treat1, treat2, treat3),
+#' pw1 <- pairwise(list(treat1, treat2, treat3),
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
 #'   data = smokingcessation, sm = "OR")
 #' 
 #' # Conduct network meta-analysis
 #' #
-#' net1 <- netmeta(p1)
+#' net1 <- netmeta(pw1)
 #' 
 #' # Calculate measures based on a common effects model
 #' #        
@@ -103,7 +103,7 @@
 #'   xlab = "Mean path length", ylab = "Minimal parallelism")
 #' text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex = 0.8)
 #'
-#' \dontrun{
+#' \donttest{
 #' data(Senn2013)
 #' 
 #' # Conduct common effects network meta-analysis with reference
