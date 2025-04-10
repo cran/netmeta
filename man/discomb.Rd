@@ -2,7 +2,8 @@
 % Please edit documentation in R/discomb.R
 \name{discomb}
 \alias{discomb}
-\title{(disconnected networks)}
+\title{Additive network meta-analysis for combinations of treatments
+(disconnected networks)}
 \usage{
 discomb(
   TE,

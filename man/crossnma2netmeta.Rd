@@ -70,7 +70,7 @@ A netmeta object with additional class "netmeta.crossnma".
 Auxiliary function to create a netmeta object from a crossnma object
 }
 \examples{
-\dontrun{
+\donttest{
 if (requireNamespace("crossnma", quietly = TRUE)) {
 library("crossnma")
 # Create a JAGS model

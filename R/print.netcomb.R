@@ -75,39 +75,7 @@
 #' @keywords print
 #' 
 #' @examples
-#' data(Linde2016)
-#' 
-#' # Only consider studies including Face-to-face PST (to reduce
-#' # runtime of example)
-#' #
-#' face <- subset(Linde2016, id %in% c(16, 24, 49, 118))
-#' 
-#' # Conduct random effects network meta-analysis
-#' #
-#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'   data = face, reference.group = "placebo",
-#'   sm = "OR", common = FALSE)
-#' 
-#' # Additive model for treatment components
-#' #
-#' nc1 <- netcomb(net1)
-#' nc1
-#' 
-#' \donttest{
-#' print(nc1, digits = 2, digits.stat = 3)
-#' 
-#' # Conduct random effects network meta-analysis
-#' #
-#' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'   data = Linde2016, reference.group = "placebo",
-#'   sm = "OR", common = FALSE)
-#' 
-#' # Additive model for treatment components
-#' #
-#' nc2 <- netcomb(net2)
-#' nc2
-#' print(nc2, digits = 2, digits.stat = 3)
-#' }
+#' # Examples: example(netcomb)
 #' 
 #' @method print netcomb
 #' @export
@@ -629,28 +597,46 @@ print.netcomb <- function(x,
         if (print.tau2 | print.tau | print.I2)
           cat("\n")
         #
-        cat("Heterogeneity statistics:\n")
-        #
-        hetdat <- 
-          data.frame(Q = formatN(c(x$Q.additive,
-                                   x$Q.standard,
-                                   x$Q.diff),
-                                 digits.Q),
-                     df.Q = formatN(c(x$df.Q.additive,
-                                      x$df.Q.standard,
-                                      x$df.Q.diff), 0),
-                     pval = formatPT(c(x$pval.Q.additive,
-                                       x$pval.Q.standard,
-                                       x$pval.Q.diff),
-                                     digits = digits.pval.Q,
-                                     scientific = scientific.pval,
-                                     zero = zero.pval, JAMA = JAMA.pval),
-                     row.names = c("Additive model", "Standard model",
-                                   "Difference"))
-        #
-        names(hetdat) <- c("Q", "df", "p-value")
-        #
-        print(hetdat)
+        if (inherits(x, "discomb") && x$s > 1) {
+          cat("Heterogeneity statistic:\n")
+          #
+          hetdat <- 
+            data.frame(Q = formatN(x$Q.additive, digits.Q),
+                       df.Q = formatN(x$df.Q.additive, 0),
+                       pval = formatPT(x$pval.Q.additive,
+                                       digits = digits.pval.Q,
+                                       scientific = scientific.pval,
+                                       zero = zero.pval, JAMA = JAMA.pval),
+                       row.names = "")
+          #
+          names(hetdat) <- c("Q", "df", "p-value")
+          #
+          print(hetdat)
+        }
+        else {
+          cat("Heterogeneity statistics:\n")
+          #
+          hetdat <- 
+            data.frame(Q = formatN(c(x$Q.additive,
+                                     x$Q.standard,
+                                     x$Q.diff),
+                                   digits.Q),
+                       df.Q = formatN(c(x$df.Q.additive,
+                                        x$df.Q.standard,
+                                        x$df.Q.diff), 0),
+                       pval = formatPT(c(x$pval.Q.additive,
+                                         x$pval.Q.standard,
+                                         x$pval.Q.diff),
+                                       digits = digits.pval.Q,
+                                       scientific = scientific.pval,
+                                       zero = zero.pval, JAMA = JAMA.pval),
+                       row.names = c("Additive model", "Standard model",
+                                     "Difference"))
+          #
+          names(hetdat) <- c("Q", "df", "p-value")
+          #
+          print(hetdat)
+        }
       }
     }
     #

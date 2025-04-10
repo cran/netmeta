@@ -229,16 +229,6 @@
 #'   backtransf = FALSE)
 #' netleague(net1, net1, seq = netrank(net1), ci = FALSE,
 #'   backtransf = FALSE, direct = TRUE)
-#' 
-#' # Generate a partial order of treatment rankings 
-#' #
-#' np <- netposet(net1, net2, outcomes = outcomes)
-#' plot(np)
-#' }
-#' 
-#' \dontrun{
-#' if (requireNamespace("Rgraphviz", quietly = TRUE))
-#'   hasse(np)
 #' }
 #' 
 #' options(oldopts)

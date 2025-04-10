@@ -94,40 +94,79 @@
 #' \bold{64}, 163--71
 #' 
 #' @examples
-#' data(smokingcessation)
-#' 
-#' pw1 <- pairwise(list(treat1, treat2, treat3),
-#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
-#'   data = smokingcessation, sm = "OR")
-#' net1 <- netmeta(pw1)
+#' \donttest{
+#' # Define order of treatments in depression dataset dat.linde2015
+#' #
+#' trts <- c("TCA", "SSRI", "SNRI", "NRI",
+#'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 #'
+#' # Outcome labels
+#' #
+#' outcomes <- c("Early response", "Early remission")
+#' 
+#' # (1) Early response
+#' #
+#' pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+#'   studlab = id, data = dat.linde2015, sm = "OR")
+#' #
+#' net1 <- netmeta(pw1, common = FALSE, seq = trts, ref = "Placebo",
+#'   small.values = "undesirable")
 #' netrank(net1)
 #' 
-#' \donttest{
-#' data(Senn2013)
+#' # (2) Early remission
+#' #
+#' pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+#'   studlab = id, data = dat.linde2015, sm = "OR")
+#' #
+#' net2 <- netmeta(pw2, common = FALSE, seq = trts, ref = "Placebo",
+#'   small.values = "undesirable")
+#' netrank(net2)
 #' 
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", random = FALSE)
-#' 
-#' nr2 <- netrank(net2)
-#' nr2
-#' print(nr2, sort = FALSE)
+#' # Image plot of treatment rankings (two outcomes)
+#' #
+#' plot(netrank(net1), netrank(net2), name = outcomes, digits = 2)
 #'
-#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD")
 #' 
-#' nr3 <- netrank(net3)
-#' nr3
-#' print(nr3, sort = "common")
-#' print(nr3, sort = FALSE)
-#'
-#' net4 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD")
+#' # Outcome labels
+#' #
+#' outcomes <- c("Early response", "Early remission",
+#'   "Lost to follow-up", "Lost to follow-up due to AEs",
+#'   "Adverse events (AEs)")
 #' 
-#' nr4 <- netrank(net4, method = "SUCRA", nsim = 100)
-#' nr4
-#' print(nr4, sort = "common")
-#' print(nr4, sort = FALSE)
+#' # (3) Loss to follow-up
+#' #
+#' pw3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
+#'   studlab = id, data = dat.linde2015, sm = "OR")
+#' #
+#' net3 <- netmeta(pw3, common = FALSE, seq = trts, ref = "Placebo",
+#'   small.values = "desirable")
+#' 
+#' # (4) Loss to follow-up due to adverse events
+#' #
+#' pw4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
+#'   studlab = id, data = subset(dat.linde2015, id != 55), sm = "OR")
+#' #
+#' net4 <- netmeta(pw4, common = FALSE, seq = trts, ref = "Placebo",
+#'   small.values = "desirable")
+#' 
+#' # (5) Adverse events
+#' #
+#' pw5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
+#'   studlab = id, data = dat.linde2015, sm = "OR")
+#' #
+#' net5 <- netmeta(pw5, common = FALSE, seq = trts, ref = "Placebo",
+#'   small.values = "desirable")
+#' 
+#' # Image plot of treatment rankings (two outcomes)
+#' #
+#' plot(netrank(net1), netrank(net2), netrank(net3),
+#'   netrank(net4), netrank(net5),
+#'   name = outcomes, digits = 2)
 #' }
 #' 
 #' @rdname netrank

@@ -90,6 +90,9 @@ ran1 <- rankogram(net1, nsim = 100)
 ran1
 print(ran1, cumulative.rankprob = TRUE)
 
+# Also print mean ranks
+summary(ran1)
+
 plot(ran1)
 
 }

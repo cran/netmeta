@@ -449,7 +449,9 @@
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link[meta]{pairwise}}, \code{\link{forest.netmeta}},
-#'   \code{\link{netrank}}, \code{\link[meta]{metagen}}
+#'   \code{\link{netrank}}, \code{\link[meta]{metagen}},
+#'   \code{\link{smokingcessation}}, \code{\link{Senn2013}},
+#'   \code{\link{dietaryfat}}
 #' 
 #' @references
 #' Jackson D, White IR, Riley RD (2012):
@@ -484,6 +486,10 @@
 #' \bold{36}, 1--48
 #' 
 #' @examples
+#' #
+#' # 1) Smoking cessation example
+#' #
+#' 
 #' data(smokingcessation)
 #' 
 #' # Transform data from arm-based format to contrast-based format
@@ -497,7 +503,22 @@
 #' net1 <- netmeta(pw1, common = FALSE)
 #' net1
 #' 
+#' # Draw network graphs
+#' #
+#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25)
+#' tname <- c("No intervention", "Self-help",
+#'   "Individual counselling", "Group counselling")
+#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25, labels = tname)
+#' 
+#' # Forest plot
+#' #
+#' forest(net1)
+#' 
 #' \donttest{
+#' #
+#' # 2) Diabetes example
+#' #
+#' 
 #' data(Senn2013)
 #' 
 #' # Conduct common effects network meta-analysis
@@ -510,22 +531,115 @@
 #' # Comparison with reference group
 #' #
 #' print(net2, reference = "plac")
+#' forest(net2, reference = "plac")
+#' 
+#' # Print detailed results
+#' #
+#' snet2 <- summary(net2)
+#' print(snet2, digits = 3)
+#' 
+#' # Only show individual study results for multi-arm studies
+#' #
+#' print(snet2, digits = 3, truncate = multiarm)
+#' 
+#' # Only show first three individual study results
+#' #
+#' print(snet2, digits = 3, truncate = 1:3)
+#' 
+#' # Only show individual study results for Kim2007 and Willms1999
+#' #
+#' print(snet2, digits = 3, truncate = c("Kim2007", "Willms1999"))
+#' 
+#' # Only show individual study results for studies starting with the
+#' # letter "W"
+#' #
+#' print(snet2, ref = "plac", digits = 3,
+#'   truncate = substring(studlab, 1, 1) == "W")
 #'
 #' # Conduct random effects network meta-analysis
 #' #
 #' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", common = FALSE)
+#'   data = Senn2013, sm = "MD", common = FALSE,
+#'   reference = "plac")
 #' net3
+#' forest(net3, xlim = c(-1.5, 1), xlab = "HbA1c difference")
+#' 
+#' # Add column with P-Scores on right side of forest plot
+#' #
+#' forest(net3, xlim = c(-1.5, 1),
+#'   xlab = "HbA1c difference",
+#'   rightcols = c("effect", "ci", "Pscore"),
+#'   just.addcols = "right")
+#' 
+#' # Add column with P-Scores on left side of forest plot
+#' #
+#' forest(net3, xlim = c(-1.5, 1),
+#'   xlab = "HbA1c difference",
+#'   leftcols = c("studlab", "Pscore"),
+#'   just.addcols = "right")
+#' 
+#' # Sort forest plot by descending P-Score
+#' #
+#' forest(net3, xlim = c(-1.5, 1),
+#'   xlab = "HbA1c difference",
+#'   rightcols = c("effect", "ci", "Pscore"),
+#'   just.addcols = "right",
+#'   sortvar = -Pscore)
+#' 
+#' # Sort by and print number of studies with direct treatment comparisons
+#' #
+#' forest(net3, xlim = c(-1.5, 1),
+#'   xlab = "HbA1c difference",
+#'   leftcols = c("studlab", "k"),
+#'   leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
+#'   sortvar = -k,
+#'   smlab = "Random Effects Model")
 #' 
 #' # Change printing order of treatments with placebo last and use
 #' # long treatment names
 #' #
 #' trts <- c("acar", "benf", "metf", "migl", "piog",
 #'   "rosi", "sita", "sulf", "vild", "plac")
+#' #
 #' net4 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
 #'   data = Senn2013, sm = "MD", common = FALSE,
-#'   seq = trts, reference = "Placebo")
+#'   reference = "Placebo", seq = trts)
 #' print(net4, digits = 2)
+#' 
+#' #
+#' # 3) Dietary fat example
+#' #
+#' 
+#' data(dietaryfat)
+#' 
+#' # Transform data from arm-based format to contrast-based format
+#' # Using incidence rate ratios (sm = "IRR") as effect measure.
+#' # Note, the argument 'sm' is not necessary as this is the default
+#' # in R function metainc() called internally
+#' #
+#' pw5 <- pairwise(list(treat1, treat2, treat3),
+#'   list(d1, d2, d3), time = list(years1, years2, years3),
+#'   studlab = ID, data = dietaryfat, sm = "IRR")
+#' pw5
+#' 
+#' # Conduct network meta-analysis
+#' #
+#' net5 <- netmeta(pw5)
+#' net5
+#' 
+#' # Conduct network meta-analysis using incidence rate differences
+#' # (sm = "IRD")
+#' #
+#' pw6 <- pairwise(list(treat1, treat2, treat3),
+#'   list(d1, d2, d3), time = list(years1, years2, years3),
+#'   studlab = ID, data = dietaryfat, sm = "IRD")
+#' net6 <- netmeta(pw6)
+#' net6
+#' 
+#' # Draw network graph
+#' #
+#' netgraph(net5, points = TRUE, cex.points = 3, cex = 1.25,
+#'   labels = c("Control","Diet", "Diet 2"))
 #' }
 #' 
 #' @export netmeta
@@ -1234,10 +1348,12 @@ netmeta <- function(TE, seTE,
   # Calculate weight matrix and generate ordered dataset, with added numbers
   # of arms per study
   #
-  p0 <- prepare2(TE, seTE, treat1, treat2, studlab, correlated = correlated,
-                 func.inverse = func.inverse)
+  p0 <- prepare(TE, seTE, treat1, treat2, studlab,
+                correlated = correlated,
+                func.inverse = func.inverse)
   #
-  W.matrix.common <- p0$W
+  W.matrix.common <- as.matrix(p0$W)
+  Cov.matrix.common <- as.matrix(p0$Cov)
   dat.c <- p0$data
   #
   # Check consistency of treatment effects and standard errors in
@@ -1267,7 +1383,7 @@ netmeta <- function(TE, seTE,
   # Common effects model
   #
   res.c <- nma_ruecker(dat.c$TE,
-                       as.matrix(W.matrix.common),
+                       W.matrix.common,
                        sqrt(1 / dat.c$weights),
                        dat.c$treat1, dat.c$treat2,
                        dat.c$treat1.pos, dat.c$treat2.pos,
@@ -1311,8 +1427,12 @@ netmeta <- function(TE, seTE,
         dat.tau$time2 <- time2
       }
       #
-      #dat.tau <- dat.tau[order(dat.tau$studlab,
-      #                         dat.tau$treat1, dat.tau$treat2), , drop = FALSE]
+      .order <- NULL
+      dat.tau$.order <- seq_len(nrow(dat.tau))
+      #
+      dat.tau <-
+        dat.tau[order(dat.tau$studlab,
+                      dat.tau$treat1, dat.tau$treat2), , drop = FALSE]
       #
       keep <- logical(0)
       wo <- logical(0)
@@ -1366,8 +1486,6 @@ netmeta <- function(TE, seTE,
       newnames <- paste0("V", seq_len(ncols2 - ncols1))
       names(dat.tau)[(ncols1 + 1):ncols2] <- newnames
       #
-      dat.tau <- dat.tau[order(dat.tau$studlab), ]
-      #
       trts.tau <- newnames[-length(newnames)]
       #
       formula.trts <-
@@ -1384,6 +1502,8 @@ netmeta <- function(TE, seTE,
       #
       dat.tau.TE <- dat.tau$TE
       dat.tau$comparison <- paste(dat.tau$treat1, dat.tau$treat2, sep = " vs ")
+      #
+      dat.tau %<>% relocate(.order, .after = last_col())
       #
       if (length(dat.tau.TE) == 1) {
         rma1 <- runNN(rma.uni,
@@ -1410,14 +1530,16 @@ netmeta <- function(TE, seTE,
   else
     tau <- tau.preset
   #
-  p1 <- prepare2(TE, seTE, treat1, treat2, studlab, tau, correlated,
-                 func.inverse)
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab,
+                tau = tau, correlated = correlated,
+                func.inverse = func.inverse)
   #
-  W.matrix.random <- p1$W
+  W.matrix.random <- as.matrix(p1$W)
+  Cov.matrix.random <- as.matrix(p1$Cov)
   dat.r <- p1$data
   #
   res.r <- nma_ruecker(dat.r$TE,
-                       as.matrix(W.matrix.random),
+                       W.matrix.random,
                        sqrt(1 / dat.r$weights),
                        dat.r$treat1, dat.r$treat2,
                        dat.r$treat1.pos, dat.r$treat2.pos,
@@ -1468,6 +1590,12 @@ netmeta <- function(TE, seTE,
   #
   W.matrix.random <- W.matrix.random[o, o, drop = FALSE]
   rownames(W.matrix.random) <- colnames(W.matrix.random) <- res.c$studlab[o]
+  #
+  Cov.matrix.common <- Cov.matrix.common[o, o, drop = FALSE]
+  rownames(Cov.matrix.common) <- colnames(Cov.matrix.common) <- res.c$studlab[o]
+  #
+  Cov.matrix.random <- Cov.matrix.random[o, o, drop = FALSE]
+  rownames(Cov.matrix.random) <- colnames(Cov.matrix.random) <- res.c$studlab[o]
   #
   res <- list(studlab = res.c$studlab[o],
               treat1 = res.c$treat1[o],
@@ -1611,6 +1739,9 @@ netmeta <- function(TE, seTE,
               #
               W.matrix.common = W.matrix.common,
               W.matrix.random = W.matrix.random,
+              #
+              Cov.matrix.common = Cov.matrix.common,
+              Cov.matrix.random = Cov.matrix.random,
               #
               A.matrix = res.c$A.matrix,
               X.matrix = res.c$B.matrix[o, ],

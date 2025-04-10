@@ -1,28 +1,31 @@
-nma_additive <- function(TE, weights, studlab,
+nma_additive <- function(TE, W,
                          treat1, treat2,
+                         studlab,
                          level,
                          X, C.matrix, B.matrix,
                          df.Q.additive, n, sep.trts) {
   
   
   m <- length(TE)
-  ##
-  ## Adjusted weights
-  ##
-  W <- diag(weights, nrow = length(weights))
-  ##
-  ## Laplacian matrix and pseudoinverse of L
-  ##
+  #
+  # Drop Matrix attributes
+  #
+  W <- as.matrix(W)
+  class(W) <- "matrix"
+  #
+  # Laplacian matrix and pseudoinverse of L
+  #
   L <- t(X) %*% W %*% X
   ##
   Lplus <- ginv(L) # = Cov matrix of beta (components)
   Lplus[is_zero(Lplus)] <- 0
   colnames(Lplus) <- colnames(L)
   rownames(Lplus) <- rownames(L)
-  ##
-  ## H matrix
-  ##
+  #
+  # H matrix
+  #
   H <- X %*% Lplus %*% t(X) %*% W
+  H[is_zero(H)] <- 0
   
   
   ##
@@ -66,6 +69,7 @@ nma_additive <- function(TE, weights, studlab,
   # Variance-covariance matrix for all comparisons
   #
   Cov <- X.all %*% Lplus %*% t(X.all)
+  Cov[is_zero(Cov)] <- 0
   #
   delta.all <- as.vector(X.all %*% beta)
   se.delta.all <- sqrt(diag(X.all %*% Lplus %*% t(X.all)))
@@ -134,7 +138,10 @@ nma_additive <- function(TE, weights, studlab,
     upper.I2 <- ci.I2$upper
   }
   
-  
+  H.matrix <- H
+  #
+  rownames(H.matrix) <- colnames(H.matrix) <- studlab
+  #
   res <- list(comparisons = comparisons,
               all.comparisons = all.comparisons,
               components = components,
@@ -149,7 +156,7 @@ nma_additive <- function(TE, weights, studlab,
               ##
               L.matrix = L,
               Lplus.matrix = Lplus,
-              H.matrix = H,
+              H.matrix = H.matrix,
               #
               Cov = Cov
               )

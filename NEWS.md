@@ -1,3 +1,45 @@
+## netmeta, version 3.2-0 (2025-04-10)
+
+### Major changes
+
+* [Nana-Adjoa Kwarteng](https://orcid.org/0009-0009-0502-6887) added as
+  a contributor to the R package **netmeta**
+
+* New R function netmetareg() to conduct network meta-regression with a
+  single continuous or binary covariate
+
+* Calculate mean and median ranks in R function rankogram()
+
+* New R functions summary.rankogram() and print.summary.rankogram() to print
+  SUCRAs and mean ranks in addition to ranking probabilities
+
+* Add R package **crossnma** to Suggests
+
+### Bug fixes
+
+* netmeta():
+  - an incorrect between-study variance was computed for the REML or ML
+    method in datasets with multi-arm studies when pairwise comparisons
+    were not properly grouped
+
+### User-visible changes
+
+* print.netcomb():
+  - do not print empty lines for missing heterogeneity statistics in
+    disconnected networks
+
+### Internal changes
+
+* Rename internal function prepare2() to prepare(), after removing the old
+  function prepare()
+
+* netcomb(), discomb(), netmetabin():
+  - use new internal function prepare()
+
+* netcomb(), discomb():
+  - use same order as well as row and column names for hat matrices as netmeta()
+
+
 ## netmeta, version 3.1-1 (2025-02-05)
 
 ### Major changes

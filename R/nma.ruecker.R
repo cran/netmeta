@@ -67,10 +67,12 @@ nma.ruecker <- function(TE, W, seTE,
   ##
   G <- B %*% Lplus %*% t(B)
   H <- G %*% W
+  H[is_zero(H)] <- 0
   ##
   ## Variance-covariance matrix for all comparisons
   ##
   Cov <- B.full %*% Lplus %*% t(B.full)
+  Cov[is_zero(Cov)] <- 0
   ##
   ## Resulting effects and variances at numbered edges
   ##

@@ -198,6 +198,10 @@
 #' \bold{349}, g5630
 #' 
 #' @examples
+#' #
+#' # 1) COPD example
+#' #
+#' 
 #' pw1 <- pairwise(treatment, event = r, n = N,
 #'   studlab = author, data = dat.woods2010, sm = "OR")
 #' #
@@ -223,14 +227,41 @@
 #' # and number of studies
 #' print(netsplit(net1), digits = 2, sortvar = cbind(-prop.common, -k))
 #' 
+#' #
+#' # 2) Diabetes example
+#' #
+#' 
 #' data(Senn2013)
 #' #
 #' net2 <- netmeta(TE, seTE, treat1.long, treat2.long,
 #'   studlab, data = Senn2013)
 #' #
-#' print(netsplit(net2), digits = 2)
+#' ns2 <- netsplit(net2)
+#' #
+#' print(ns2, digits = 2)
 #' # Layout of Puhan et al. (2014), Table 1
-#' print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
+#' print(ns2, digits = 2, ci = TRUE, test = FALSE)
+#' 
+#' # Forest plot showing comparisons contributing both direct and
+#' # indirect evidence
+#' #
+#' forest(ns2, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
+#' 
+#' # Forest plot showing comparisons contributing direct evidence
+#' #
+#' forest(ns2, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
+#'   show = "with.direct")
+#' 
+#' # Forest plot only showing network estimates compared to reference
+#' # group and prediction intervals
+#' #
+#' forest(ns2, fontsize = 8, spacing = 0.75, show = "all",
+#'   only.reference = TRUE, prediction = TRUE,
+#'   direct = FALSE, indirect = FALSE)
+#' 
+#' #
+#' # 3) Another COPD example
+#' #
 #' 
 #' pw3 <- pairwise(treatment, death, randomized, studlab = id,
 #'   data = dat.dong2013, sm = "OR")

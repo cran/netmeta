@@ -86,8 +86,7 @@ as columns for each network comparison, direct or indirect as rows.
 This function generates the contribution of direct comparisons to
 every network treatment comparison. The output is a matrix where
 rows represent network treatment effects and columns represent the
-contribution of direct treatment effects. R package \bold{igraph} must be
-available in order to run this function.
+contribution of direct treatment effects.
 }
 \details{
 In network meta-analysis (NMA), it is important to assess the
@@ -98,8 +97,8 @@ contributes to each treatment effect estimate from network
 meta-analysis.
 
 We use ideas from graph theory to derive the proportion that is
-contributed by each direct treatment effect. Accordingly, R package
-\bold{igraph} must be available in order to run this function. We start
+contributed by each direct treatment effect using R package
+\bold{igraph}. We start
 with the 'projection' matrix in a two-step network meta-analysis model,
 called the H matrix, which is analogous to the hat matrix in a
 linear regression model. H entries are translated to proportion
@@ -187,7 +186,9 @@ net1 <- netmeta(pw1)
 
 # Shortest path approach (default)
 netcontrib(net1)
+}
 
+\dontrun{ 
 # Random walk approach
 netcontrib(net1, method = "r")
 }

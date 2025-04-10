@@ -1,3 +1,4 @@
+#' Additive network meta-analysis for combinations of treatments
 #' (disconnected networks)
 #' 
 #' @description
@@ -999,16 +1000,17 @@ discomb <- function(TE, seTE,
     C.matrix <- as.matrix(C.matrix)
   ##
   c <- ncol(C.matrix) # number of components
-  ##
-  ## Create B.matrix
-  ##
+  #
+  # Create B.matrix
+  #
   p0 <- prepare(TE, seTE, treat1, treat2, studlab,
                 func.inverse = func.inverse)
-  ##
-  o <- order(p0$order)
-  ##
-  B.matrix <- createB(p0$treat1.pos[o], p0$treat2.pos[o])
-  ##
+  #
+  W.matrix.common <- p0$W
+  dat.c <- p0$data
+  #
+  B.matrix <- createB(dat.c$treat1.pos, dat.c$treat2.pos)
+  #
   colnames(B.matrix) <- trts
   rownames(B.matrix) <- studlab
   ##
@@ -1035,8 +1037,8 @@ discomb <- function(TE, seTE,
   ## (6) Conduct network meta-analyses
   ##
   ##
-  tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
-                      order = p0$order,
+  tdata <- data.frame(studies = dat.c$studlab, narms = dat.c$narms,
+                      order = dat.c$order,
                       stringsAsFactors = FALSE)
   #
   tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), , drop = FALSE]
@@ -1069,26 +1071,34 @@ discomb <- function(TE, seTE,
   else {
     Q <- df.Q <- pval.Q <- df.Q.diff <- NA
   }
-  ##
-  res.c <- nma_additive(p0$TE[o], p0$weights[o], p0$studlab[o],
-                        p0$treat1[o], p0$treat2[o], level.ma,
+  #
+  res.c <- nma_additive(dat.c$TE, W.matrix.common,
+                        dat.c$treat1, dat.c$treat2,
+                        dat.c$studlab,
+                        level.ma,
                         X.matrix, C.matrix, B.matrix,
                         df.Q.additive, n, sep.trts)
-  ##
-  ## Random effects models
-  ##
+  #
+  # Random effects models
+  #
   if (!is.null(tau.preset))
     tau <- tau.preset
   else
     tau <- res.c$tau
-  ##
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, func.inverse)
-  ##
-  res.r <- nma_additive(p1$TE[o], p1$weights[o], p1$studlab[o],
-                        p1$treat1[o], p1$treat2[o], level.ma,
+  #
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab,
+                tau = if (is.na(tau)) 0 else tau,
+                func.inverse = func.inverse)
+  #
+  W.matrix.random <- p1$W
+  dat.r <- p1$data
+  #
+  res.r <- nma_additive(dat.r$TE, W.matrix.random,
+                        dat.r$treat1, dat.r$treat2,
+                        dat.r$studlab,
+                        level.ma,
                         X.matrix, C.matrix, B.matrix,
-                        df.Q.additive,
-                        n, sep.trts)
+                        df.Q.additive, n, sep.trts)
   #
   # Difference to standard network meta-analysis model
   #
@@ -1135,23 +1145,31 @@ discomb <- function(TE, seTE,
   ## (7) Generate CNMA object
   ##
   ##
-  n.comps <- table(p0$studlab)
-  designs <- designs(p0$treat1, p0$treat2, p0$studlab,
+  n.comps <- table(dat.c$studlab)
+  designs <- designs(dat.c$treat1, dat.c$treat2, dat.c$studlab,
                      sep.trts = sep.trts)
   ##  
   NAs <- rep(NA, length(res.c$comparisons$TE))
-  ##
-  res <- list(studlab = p0$studlab[o],
-              treat1 = p0$treat1[o],
-              treat2 = p0$treat2[o],
+  #
+  o <- order(dat.c$order)
+  #
+  W.matrix.common <- W.matrix.common[o, o, drop = FALSE]
+  rownames(W.matrix.common) <- colnames(W.matrix.common) <- res.c$studlab[o]
+  #
+  W.matrix.random <- W.matrix.random[o, o, drop = FALSE]
+  rownames(W.matrix.random) <- colnames(W.matrix.random) <- res.c$studlab[o]
+  #
+  res <- list(studlab = dat.c$studlab,
+              treat1 = dat.c$treat1,
+              treat2 = dat.c$treat2,
               ##
-              TE = p0$TE[o],
-              seTE = p0$seTE[o],
-              seTE.adj = sqrt(1 / p0$weights[o]),
-              seTE.adj.common = sqrt(1 / p0$weights[o]),
-              seTE.adj.random = sqrt(1 / p1$weights[o]),
+              TE = dat.c$TE,
+              seTE = dat.c$seTE,
+              seTE.adj = sqrt(1 / dat.c$weights),
+              seTE.adj.common = sqrt(1 / dat.c$weights),
+              seTE.adj.random = sqrt(1 / dat.r$weights),
               ##
-              design = designs$design[o],
+              design = designs$design,
               ##
               event1 = event1,
               event2 = event2,
@@ -1193,12 +1211,12 @@ discomb <- function(TE, seTE,
               statistic.nma.common = NAs,
               pval.nma.common = NAs,
               ##
-              TE.cnma.common = res.c$comparisons$TE,
-              seTE.cnma.common = res.c$comparisons$seTE,
-              lower.cnma.common = res.c$comparisons$lower,
-              upper.cnma.common = res.c$comparisons$upper,
-              statistic.cnma.common = res.c$comparisons$statistic,
-              pval.cnma.common = res.c$comparisons$p,
+              TE.cnma.common = res.c$comparisons$TE[o],
+              seTE.cnma.common = res.c$comparisons$seTE[o],
+              lower.cnma.common = res.c$comparisons$lower[o],
+              upper.cnma.common = res.c$comparisons$upper[o],
+              statistic.cnma.common = res.c$comparisons$statistic[o],
+              pval.cnma.common = res.c$comparisons$p[o],
               ##
               TE.common = res.c$all.comparisons$TE,
               seTE.common = res.c$all.comparisons$seTE,
@@ -1214,12 +1232,12 @@ discomb <- function(TE, seTE,
               statistic.nma.random = NAs,
               pval.nma.random = NAs,
               ##
-              TE.cnma.random = res.r$comparisons$TE,
-              seTE.cnma.random = res.r$comparisons$seTE,
-              lower.cnma.random = res.r$comparisons$lower,
-              upper.cnma.random = res.r$comparisons$upper,
-              statistic.cnma.random = res.r$comparisons$statistic,
-              pval.cnma.random = res.r$comparisons$p,
+              TE.cnma.random = res.r$comparisons$TE[o],
+              seTE.cnma.random = res.r$comparisons$seTE[o],
+              lower.cnma.random = res.r$comparisons$lower[o],
+              upper.cnma.random = res.r$comparisons$upper[o],
+              statistic.cnma.random = res.r$comparisons$statistic[o],
+              pval.cnma.random = res.r$comparisons$p[o],
               ##
               TE.random = res.r$all.comparisons$TE,
               seTE.random = res.r$all.comparisons$seTE,
@@ -1270,7 +1288,10 @@ discomb <- function(TE, seTE,
               Q.diff = Q.diff,
               df.Q.diff = df.Q.diff,
               pval.Q.diff = pval.Q.diff, 
-              ##
+              #
+              W.matrix.common = W.matrix.common,
+              W.matrix.random = W.matrix.random,
+              #
               A.matrix = A.matrix,
               X.matrix = X.matrix,
               B.matrix = B.matrix,
@@ -1281,8 +1302,8 @@ discomb <- function(TE, seTE,
               L.matrix.random = res.r$L.matrix,
               Lplus.matrix.random = res.r$Lplus.matrix,
               ##
-              H.matrix.common = res.c$H.matrix[o, o],
-              H.matrix.random = res.r$H.matrix[o, o],
+              H.matrix.common = res.c$H.matrix[o, o, drop = FALSE],
+              H.matrix.random = res.r$H.matrix[o, o, drop = FALSE],
               ##
               n.matrix = NULL,
               events.matrix = NULL,

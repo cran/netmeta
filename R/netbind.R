@@ -77,11 +77,18 @@
 #' nb1 <- netbind(nc1, net1,
 #'   name = c("Additive CNMA", "Standard NMA"),
 #'   col.study = c("red", "black"), col.square = c("red", "black"))
+#' #
+#' nb1
+#' #
 #' forest(nb1,
 #'   col.subgroup = "black", addrow.subgroups = FALSE,
 #'   fontsize = 10, spacing = 0.7, squaresize = 0.9,
 #'   label.left = "Favours Placebo",
 #'   label.right = "Favours other")
+#' 
+#' # Also show results for common effects model
+#' #
+#' print(nb1, common = TRUE)
 #' }
 #' 
 #' @export netbind

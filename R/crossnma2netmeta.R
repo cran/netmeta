@@ -43,7 +43,7 @@
 #' @seealso \code{\link{netmeta}}
 #' 
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' if (requireNamespace("crossnma", quietly = TRUE)) {
 #' library("crossnma")
 #' # Create a JAGS model

@@ -318,6 +318,23 @@
 #' nc1 <- netcomb(net1, inactive = "placebo")
 #' nc1
 #' 
+#' # Print results with two digits and test statistics with three digits
+#' print(nc1, digits = 2, digits.stat = 3)
+#'
+#' # Print detailed results
+#' print(summary(nc1), digits = 2, digits.stat = 3)
+#' 
+#' # All available combinations in CNMA
+#' combinations(nc1) # only "Face-to-face PST + SSRI"
+#' 
+#' # Create C matrix with all available interactions, i.e., one interaction
+#' # for each combination
+#' colnames(createC(nc1))
+#' 
+#' # Run interaction CNMA model with all available interactions
+#' # (same result as standard NMA)
+#' netcomb(net1, C.matrix = createC(nc1))
+#' 
 #' \donttest{
 #' forest(net1, xlim = c(0.2, 50))
 #' forest(nc1, xlim = c(0.2, 50))
@@ -516,14 +533,18 @@ netcomb <- function(x,
   ##
   p0 <- prepare(x$TE, x$seTE, x$treat1, x$treat2, x$studlab,
                 func.inverse = func.inverse)
-  ##
-  o <- order(p0$order)
-  ##
-  ## Common effects models
-  ##
-  res.c <- nma_additive(p0$TE[o], p0$weights[o], p0$studlab[o],
-                        p0$treat1[o], p0$treat2[o], x$level.ma,
-                        X.matrix, C.matrix, x$B.matrix,
+  #
+  W.matrix.common <- p0$W
+  dat.c <- p0$data
+  #
+  # Common effects models
+  #
+  res.c <- nma_additive(dat.c$TE, W.matrix.common,
+                        dat.c$treat1, dat.c$treat2,
+                        dat.c$studlab,
+                        x$level.ma,
+                        X.matrix[dat.c$order, , drop = FALSE],
+                        C.matrix, x$B.matrix[dat.c$order, , drop = FALSE],
                         df.Q.additive, x$n, x$sep.trts)
   ##
   ## Calculate heterogeneity statistics (additive model)
@@ -538,15 +559,22 @@ netcomb <- function(x,
   I2 <- res.c$I2
   lower.I2 <- res.c$lower.I2
   upper.I2 <- res.c$upper.I2
-  ##
-  ## Random effects models
-  ##
+  #
+  # Random effects models
+  #
   p1 <- prepare(x$TE, x$seTE, x$treat1, x$treat2, x$studlab,
-                if (is.na(tau)) 0 else tau, invmat)
-  ##
-  res.r <- nma_additive(p1$TE[o], p1$weights[o], p1$studlab[o],
-                        p1$treat1[o], p1$treat2[o], x$level.ma,
-                        X.matrix, C.matrix, x$B.matrix,
+                tau = if (is.na(tau)) 0 else tau,
+                func.inverse = func.inverse)
+  #
+  W.matrix.random <- p1$W
+  dat.r <- p1$data
+  #
+  res.r <- nma_additive(dat.r$TE, W.matrix.random,
+                        dat.r$treat1, dat.r$treat2,
+                        dat.r$studlab,
+                        x$level.ma,
+                        X.matrix[dat.c$order, , drop = FALSE],
+                        C.matrix, x$B.matrix[dat.c$order, , drop = FALSE],
                         df.Q.additive, x$n, x$sep.trts)
   #
   # Difference to standard network meta-analysis model
@@ -594,15 +622,23 @@ netcomb <- function(x,
   ## (5) Generate CNMA object
   ##
   ##
+  o <- order(dat.c$order)
+  #
+  W.matrix.common <- W.matrix.common[o, o, drop = FALSE]
+  rownames(W.matrix.common) <- colnames(W.matrix.common) <- res.c$studlab[o]
+  #
+  W.matrix.random <- W.matrix.random[o, o, drop = FALSE]
+  rownames(W.matrix.random) <- colnames(W.matrix.random) <- res.c$studlab[o]
+  #
   res <- list(studlab = x$studlab,
               treat1 = x$treat1,
               treat2 = x$treat2,
               ##
-              TE = p0$TE[o],
-              seTE = p0$seTE[o],
-              seTE.adj = sqrt(1 / p0$weights[o]),
-              seTE.adj.common = sqrt(1 / p0$weights[o]),
-              seTE.adj.random = sqrt(1 / p1$weights[o]),
+              TE = dat.c$TE[o],
+              seTE = dat.c$seTE[o],
+              seTE.adj = sqrt(1 / dat.c$weights[o]),
+              seTE.adj.common = sqrt(1 / dat.c$weights[o]),
+              seTE.adj.random = sqrt(1 / dat.r$weights[o]),
               ##
               design = x$design,
               ##
@@ -645,12 +681,12 @@ netcomb <- function(x,
               statistic.nma.common = x$statistic.nma.common,
               pval.nma.common = x$pval.nma.common,
               ##
-              TE.cnma.common = res.c$comparisons$TE,
-              seTE.cnma.common = res.c$comparisons$seTE,
-              lower.cnma.common = res.c$comparisons$lower,
-              upper.cnma.common = res.c$comparisons$upper,
-              statistic.cnma.common = res.c$comparisons$statistic,
-              pval.cnma.common = res.c$comparisons$p,
+              TE.cnma.common = res.c$comparisons$TE[o],
+              seTE.cnma.common = res.c$comparisons$seTE[o],
+              lower.cnma.common = res.c$comparisons$lower[o],
+              upper.cnma.common = res.c$comparisons$upper[o],
+              statistic.cnma.common = res.c$comparisons$statistic[o],
+              pval.cnma.common = res.c$comparisons$p[o],
               ##
               TE.common = res.c$all.comparisons$TE,
               seTE.common = res.c$all.comparisons$seTE,
@@ -666,12 +702,12 @@ netcomb <- function(x,
               statistic.nma.random = x$statistic.nma.random,
               pval.nma.random = x$pval.nma.random,
               ##
-              TE.cnma.random = res.r$comparisons$TE,
-              seTE.cnma.random = res.r$comparisons$seTE,
-              lower.cnma.random = res.r$comparisons$lower,
-              upper.cnma.random = res.r$comparisons$upper,
-              statistic.cnma.random = res.r$comparisons$statistic,
-              pval.cnma.random = res.r$comparisons$p,
+              TE.cnma.random = res.r$comparisons$TE[o],
+              seTE.cnma.random = res.r$comparisons$seTE[o],
+              lower.cnma.random = res.r$comparisons$lower[o],
+              upper.cnma.random = res.r$comparisons$upper[o],
+              statistic.cnma.random = res.r$comparisons$statistic[o],
+              pval.cnma.random = res.r$comparisons$p[o],
               ##
               TE.random = res.r$all.comparisons$TE,
               seTE.random = res.r$all.comparisons$seTE,
@@ -721,7 +757,10 @@ netcomb <- function(x,
               Q.diff = Q.diff,
               df.Q.diff = df.Q.diff,
               pval.Q.diff = pval.Q.diff, 
-              ##
+              #
+              W.matrix.common = W.matrix.common,
+              W.matrix.random = W.matrix.random,
+              #
               A.matrix = x$A.matrix,
               X.matrix = X.matrix,
               B.matrix = x$B.matrix,
@@ -732,8 +771,8 @@ netcomb <- function(x,
               L.matrix.random = res.r$L.matrix,
               Lplus.matrix.random = res.r$Lplus.matrix,
               ##
-              H.matrix.common = res.c$H.matrix[o, o],
-              H.matrix.random = res.r$H.matrix[o, o],
+              H.matrix.common = res.c$H.matrix[o, o, drop = FALSE],
+              H.matrix.random = res.r$H.matrix[o, o, drop = FALSE],
               ##
               n.matrix = x$n.matrix,
               events.matrix = x$events.matrix,

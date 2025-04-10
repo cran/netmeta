@@ -62,6 +62,8 @@
 #' 
 #' Additional methods and functions:
 #' \itemize{
+#' \item network meta-regression with a single continuous or binary covariate
+#'   (\code{\link{netmetareg}});
 #' \item subgroup network meta-analysis (\code{\link{subgroup.netmeta}});
 #' \item information on network connectivity
 #'   (\code{\link{netconnection}});
@@ -248,7 +250,7 @@
 #'
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
 #'   prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted
-#'   residuals quantile
+#'   residuals quantile setNames model.matrix
 #'   
 #' @importFrom methods as
 #'
@@ -280,7 +282,8 @@
 #'   grid.roundrect grid.text grob popViewport pushViewport stringWidth
 #'   unit viewport
 #' 
-#' @importFrom dplyr %>% filter select rename starts_with
+#' @importFrom dplyr %>% filter select rename starts_with relocate last_col
+#'   mutate if_else bind_rows
 #' 
 #' @importFrom magrittr %<>%
 
