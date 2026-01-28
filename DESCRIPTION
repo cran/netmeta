@@ -1,12 +1,12 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
-Version: 3.2-0
-Date: 2025-04-10
+Version: 3.3-1
+Date: 2026-01-27
 Depends: R (>= 4.0.0), meta (>= 8.0-1)
 Imports: Matrix, metafor, MASS, mvtnorm, magic, igraph, ggplot2,
         colorspace, grid, dplyr, magrittr, methods
 Suggests: Rgraphviz, graph, rgl, gridExtra, tictoc, writexl, R.rsp,
-        cccp, brglm2, crossnma
+        cccp, brglm2, crossnma, gemtc, rmarkdown, knitr
 Authors@R: c(person("Gerta", "Rücker",
                     role = "aut",
                     comment = c(ORCID = "0000-0002-2192-2560")),
@@ -58,22 +58,26 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - subgroup network meta-analysis.
 License: GPL (>= 2) | file LICENSE
 Encoding: UTF-8
-VignetteBuilder: R.rsp
-RoxygenNote: 7.3.2
+VignetteBuilder: R.rsp, knitr
+RoxygenNote: 7.3.3
 NeedsCompilation: no
-Packaged: 2025-04-10 12:00:14 UTC; sc
-Author: Gerta Rücker [aut] (<https://orcid.org/0000-0002-2192-2560>),
+Packaged: 2026-01-27 21:57:36 UTC; sc
+Author: Gerta Rücker [aut] (ORCID: <https://orcid.org/0000-0002-2192-2560>),
   Ulrike Krahn [aut],
-  Jochem König [aut] (<https://orcid.org/0000-0003-4683-0360>),
-  Orestis Efthimiou [aut] (<https://orcid.org/0000-0002-0955-7572>),
-  Annabel Davies [aut] (<https://orcid.org/0000-0003-2320-7701>),
-  Theodoros Papakonstantinou [aut]
-    (<https://orcid.org/0000-0002-6630-6817>),
-  Theodoros Evrenoglou [ctb] (<https://orcid.org/0000-0003-3336-8058>),
-  Krzysztof Ciomek [ctb] (<https://orcid.org/0000-0002-2293-2146>, Author
-    of the original MIT-licensed R package hasseDiagram),
-  Nana-Adjoa Kwarteng [ctb] (<https://orcid.org/0009-0009-0502-6887>),
-  Guido Schwarzer [aut, cre] (<https://orcid.org/0000-0001-6214-9087>)
+  Jochem König [aut] (ORCID: <https://orcid.org/0000-0003-4683-0360>),
+  Orestis Efthimiou [aut] (ORCID:
+    <https://orcid.org/0000-0002-0955-7572>),
+  Annabel Davies [aut] (ORCID: <https://orcid.org/0000-0003-2320-7701>),
+  Theodoros Papakonstantinou [aut] (ORCID:
+    <https://orcid.org/0000-0002-6630-6817>),
+  Theodoros Evrenoglou [ctb] (ORCID:
+    <https://orcid.org/0000-0003-3336-8058>),
+  Krzysztof Ciomek [ctb] (ORCID: <https://orcid.org/0000-0002-2293-2146>,
+    Author of the original MIT-licensed R package hasseDiagram),
+  Nana-Adjoa Kwarteng [ctb] (ORCID:
+    <https://orcid.org/0009-0009-0502-6887>),
+  Guido Schwarzer [aut, cre] (ORCID:
+    <https://orcid.org/0000-0001-6214-9087>)
 Maintainer: Guido Schwarzer <guido.schwarzer@uniklinik-freiburg.de>
 Repository: CRAN
-Date/Publication: 2025-04-10 19:20:14 UTC
+Date/Publication: 2026-01-28 06:10:21 UTC
