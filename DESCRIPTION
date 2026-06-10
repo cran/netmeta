@@ -1,7 +1,7 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
-Version: 3.5-0
-Date: 2026-05-27
+Version: 3.6-0
+Date: 2026-06-09
 Depends: R (>= 4.0.0), meta (>= 8.5-0)
 Imports: Matrix, metafor, MASS, mvtnorm, magic, igraph, ggplot2,
         colorspace, grid, dplyr, magrittr, methods, stringr, tidyr,
@@ -63,7 +63,7 @@ Encoding: UTF-8
 VignetteBuilder: R.rsp, knitr
 Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2026-05-27 15:38:19 UTC; sc
+Packaged: 2026-06-09 18:38:35 UTC; sc
 Author: Gerta Rücker [aut] (ORCID: <https://orcid.org/0000-0002-2192-2560>),
   Ulrike Krahn [aut],
   Jochem König [aut] (ORCID: <https://orcid.org/0000-0003-4683-0360>),
@@ -82,4 +82,4 @@ Author: Gerta Rücker [aut] (ORCID: <https://orcid.org/0000-0002-2192-2560>),
     <https://orcid.org/0000-0001-6214-9087>)
 Maintainer: Guido Schwarzer <guido.schwarzer@uniklinik-freiburg.de>
 Repository: CRAN
-Date/Publication: 2026-05-28 07:30:02 UTC
+Date/Publication: 2026-06-10 05:20:33 UTC

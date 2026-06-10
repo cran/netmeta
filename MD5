@@ -1,8 +1,8 @@
 94d55d512a9ba36caa9b7df079bae19f *COPYING
-be77960d5a3e5c1a26566e90486245ba *DESCRIPTION
+f9ce508d957783ab4343f7af4d391bc1 *DESCRIPTION
 0d6c5cf94f1e054feeb7f94dbe0c4a85 *LICENSE
 c4f0de64835810eca993838aec5fbb14 *NAMESPACE
-9f1f3e82acac15cfdcf685bdb07bf197 *NEWS.md
+2870059ff2b58fadb91002109897ade8 *NEWS.md
 f53e8b04801c20b8870d795b30c19d0f *R/Baker2009.R
 501b065f802a9c00685c2fbb8c564534 *R/Dogliotti2014.R
 64b685da63e2577ce4813ea37e7f967c *R/Dong2013.R
@@ -26,7 +26,7 @@ e0d9bd025092d37185a852e959bf9ec9 *R/compsplit.R
 df61c2276f4b324f0996e367c9a5ad54 *R/createB.R
 de9dc504438c7daa7d3a3d624d16d70e *R/createC-internal.R
 7ef7eac4818e2feb7ef04c11af0d7ec9 *R/createC.R
-99adc9b90dc3a32520385c5fead04186 *R/crossnma2netmeta.R
+0f8abe82db6430bbc9cf0e3999ab0f14 *R/crossnma2netmeta.R
 eeabbe398f50a57885b17a5885d7cc4b *R/decomp.design.R
 a53d07dfd5d5d816b179b1116f7e7571 *R/decomp.tau.R
 8114122e3bd221665c88bbd57f6db316 *R/designs.R
@@ -80,7 +80,7 @@ b15847f7b68fb6cf330ba73b92e5fb07 *R/netgraph-internal.R
 695a158b67b7a76864aa069668802802 *R/netgraph.netcomb.R
 2c7be31514cee4d9d3f62fc41f038b80 *R/netgraph.netconnection.R
 0e886449a3ea71794093a2a2d8495bd5 *R/netgraph.netimpact.R
-6dbbacd76d1e89128cb07c890efb94a8 *R/netgraph.netmeta.R
+3d203917a05505fee5a7c380978e2e38 *R/netgraph.netmeta.R
 79247bacc196bf60c96b7e8023df455c *R/netheat-internal.R
 2430d6022d9288798239a685d9c55271 *R/netheat.R
 43d29bcb6dd5c1fbfbd5d575909843e4 *R/netimpact.R
@@ -89,7 +89,7 @@ b15847f7b68fb6cf330ba73b92e5fb07 *R/netgraph-internal.R
 e877dcfd5a5b1de21c2fc7bb90ed8b93 *R/netmeasures.R
 ab41a04f4afd218d6cc8de17e81dce52 *R/netmeta-internal.R
 78afa1c3b54d9d7716e0cedc86d01c50 *R/netmeta-package.R
-430fe09d84a14bb55c39a18b9241b2e3 *R/netmeta.R
+adff500db50b9d061ec6fafd28a58ed2 *R/netmeta.R
 2e1e44e9e17f0491ade11517da027bef *R/netmetabin.R
 a6504d9fc94e2daeff7d0c747358d178 *R/netmetareg-internal.R
 e6e8761e7c08b426fef6a619dd9ff064 *R/netmetareg.R
@@ -101,7 +101,7 @@ b0df18e3b389dc4f8fe53350abce54b7 *R/nettable.R
 418f28d941f1948ea0b019417382607b *R/nettable_internal.R
 2b773a3e40c19ca870a1221b2756ff98 *R/nma.additive.R
 db22dc868432b8d6bc7d80e31963cc6a *R/nma.krahn.R
-5619cd3d2a1354fd7c58d8113fbccfe2 *R/nma.ruecker.R
+9b4693ec8acc41522191ce4e27090738 *R/nma.ruecker.R
 7bf042c1705f7c6159a126da1b91780b *R/optcircle.R
 3397c50f0a52bb283af676bcd0e55267 *R/plot.netposet.R
 b6dc189e4241c87b4d883dad4846c8e0 *R/plot.netrank.R
@@ -111,7 +111,7 @@ c469f6445fe37444b95100d0534b27f7 *R/plot.rankogram.R
 ba32ad3087135dad474f678dea6a709f *R/print.decomp.design.R
 cbe3f3084e35a7cd8de5d058e418cc26 *R/print.netbind.R
 9ab4e162ca30c5fdd287287582cec2fe *R/print.netcomb.R
-87d2200276e38cfa7b29b705c4fb2346 *R/print.netimpact.R
+6a3a6f6e79bb0a9c3c8e1fad4b4a7bfe *R/print.netimpact.R
 8a6c4e7a207fe84265e2ac2f0c9b47bc *R/print.netmeta.R
 9c0f0a65e49aa6401f29c31d61cf1418 *R/print.rankogram.R
 0c4eb1a7a0c5df4d4ef50c62da8d5746 *R/print.summary.netcomb.R
@@ -141,7 +141,7 @@ c3ef454014f7d41f54cd805824fb5d7d *R/summary.netconnection.R
 c1715e72f33fcab3af0e8d834e87c369 *R/summary.netmetareg.R
 8f6a0ac462fc1e5c845e70da3f218ba4 *R/summary.rankogram.R
 bfe58249a6722116ba09325109f2d4fc *R/tau.within.R
-d8466def710f004f57903e2484421d91 *R/textmeth.R
+d28579f5015ce83417ad46c0222b782b *R/textmeth.R
 061feb3af5ba4237716623b863685d79 *R/treats.R
 1b3ec0398aa3e0909df9f9734a2a171c *R/updateversion.R
 a48e9f14903fd6dcf08197753ef1a8a2 *R/uppertri.R
@@ -164,8 +164,8 @@ da59d9a400342eac3df283e2512e685a *inst/CITATION
 883c897836f9f63c40b03d7e482a543e *inst/MIT_LICENSE
 e260af0ed617cb45aaba34ca35d34e07 *inst/doc/netmeta-workflow.R
 feb7fc0a352f6fae718be7c5970562b2 *inst/doc/netmeta-workflow.Rmd
-743e4a3a2bb31cd27ec005fc1a3a6a74 *inst/doc/netmeta-workflow.pdf
-537f1e4b6a9366b9d4c168720b93d9f8 *inst/doc/netmeta.pdf
+3395971d6e4bfc135acaebcf3134347e *inst/doc/netmeta-workflow.pdf
+5e4c7bffba21bf606fcd5c668a0a0acc *inst/doc/netmeta.pdf
 7ae757cb0253cd4d04157e37f7c8d0da *inst/doc/netmeta.pdf.asis
 e84afaacb7a3c397fc1f50c230d279ab *man/Baker2009.Rd
 76ed5b77d9468c8bf0dbdb81f864982f *man/Dogliotti2014.Rd
@@ -219,7 +219,7 @@ ed1925368d72b0ef9d93f705747abc98 *man/netdistance.Rd
 54db2a83b7bfb485dd97b5a59b5c72e6 *man/netmatrix.Rd
 3f490f747106a05cfb0224830a900212 *man/netmeasures.Rd
 b1b446ba31583a4a2bfa66ab8022f5d6 *man/netmeta-package.Rd
-b809983d71e558e2590f708cb9cbe435 *man/netmeta.Rd
+2a8fb44c69a5e9ec40b074952ca2b32d *man/netmeta.Rd
 e97e3b21c1af4d1fd80034d4c4a4d052 *man/netmetabin.Rd
 8b0460cfd986a8e70b8f71ecc0b11e3f *man/netmetareg.Rd
 dec213ac9e3fc2f78b87b813fb2fc612 *man/netpairwise.Rd
@@ -234,7 +234,7 @@ ebc6ecf132c759a354fa1bb491d93551 *man/netposet.Rd
 c48277f577865906900c7e4111b8b551 *man/print.decomp.design.Rd
 c74ffbf7f4cdca57330bfec999450a49 *man/print.netbind.Rd
 96a6b703bdaf59b6172f3b7bc42d9828 *man/print.netcomb.Rd
-de853bf0e485d4fe066c678b6f310c6e *man/print.netimpact.Rd
+160cb1842660f776efd663caad54ceb8 *man/print.netimpact.Rd
 8b03659673e416d148fb63ac089a39ca *man/print.netmeta.Rd
 9c3b23e6f1756ffb1d98800a3f25be59 *man/print.rankogram.Rd
 5a719345c7cf52ee9eacfad210bfb58f *man/print.summary.netcomb.Rd
